@@ -161,7 +161,8 @@ void Game::ComposeFrame()
 	dx.DrawTri(gfx);
 	gfx.PutPixel(400, 300, Color(111111000));*/
 
-	gfx.Draw_FillTri(500, 100, 500, 356, 700, 356,0.f,0.f,0.f,1.f,1.f,1.f, gfx.img);
+	gfx.Draw_FillTri(500, 100, 756, 100,500, 356,0.f,0.f,1.f,0.f,0.0f ,1.f,gfx.img);
+	gfx.Draw_FillTri(756, 356, 500, 356, 756, 100, 1.f, 1.f, 0.f, 1.f, 1.0f, 0.f, gfx.img);
 
 	for (int i = 0; i < 256; i++)
 	{

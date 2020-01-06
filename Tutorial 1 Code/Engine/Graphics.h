@@ -89,6 +89,6 @@ private:
 	Color*                                              pSysBuffer = nullptr;
 	UINT* Texture2D;
 public:
-	static constexpr int ScreenWidth = 800;
-	static constexpr int ScreenHeight = 600;
+	static constexpr int ScreenWidth = 1280;
+	static constexpr int ScreenHeight = 720;
 };

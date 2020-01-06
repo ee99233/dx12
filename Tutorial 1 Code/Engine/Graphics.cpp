@@ -754,10 +754,12 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3, floa
 					float uy1 = v2 - v1;
 					float ux2 = u3 - u1;
 					float uy2 = v3 - v1;
-					float ux3 = u3 - u2;
-					float uy3 = v3 - v2;
-					float ux0 =u*ux1+ ux2*v + ux3 * c;
-					float uy0 =u*uy1+  v*uy2  + uy3 * c;
+					float ux3 =u3 - u2;
+					float uy3 = v3 - v3;
+					float ux0 =u1+u*ux1+v*ux2;
+					float uy0 = v1+u*uy1+v*uy2;
+				/*	float ux0 = c * u1 + u * u2 + v * u3;
+					float uy0 = c * v1 + u * v2 + v3 * v;*/
 					float width = 256.f * ux0;
 					float height = 256.f* uy0;
 					int de = width +256 *height;
