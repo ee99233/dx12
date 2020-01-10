@@ -12,6 +12,7 @@ public:
 	 void initmper();
 	 void initmscr();
 	 void SetPos(const Vector4d& pos);
+	 void Setfar(float near1,float far1);
 	 void SetDir(const float Xangle, const float& Zangle);
 	 void SetScreen(float aspect_radio, float fov,int iewport_width);
 	 void SetReslotion(float screenwidth, float screenheight);
@@ -34,6 +35,8 @@ private:
 	Vector4d dir;
 	float fov;
 	Point4d target;
+	float nearview;
+	float farview;
 
 	float viewplane_width;//视平面宽度
 	float viewplane_height;//视平面高度

@@ -705,10 +705,30 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 
 }
 
-void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img)
+void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img)
 {
 
-
+	/*if (x1 > x2)
+	{
+		swap(x1, x2);
+		swap(y1,y2);
+		swap(z1, z2);
+		swap(u1, u2);
+	}
+	if (x1 > x3)
+	{
+		swap(x1, x3);
+		swap(y1, y3);
+		swap(z1, z3);
+		swap(u1, u3);
+	}
+	if (x2 > x3)
+	{
+		swap(x2, x3);
+		swap(y2, y3);
+		swap(z2, z3);
+		swap(u2, u3);
+	}*/
 
 	int vx1 = x2 - x1;
 	int vy1 = y2 - y1;
@@ -728,14 +748,19 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3, floa
 	int maxx = Max(x1, Max(x2, x3));
 	int miny = Min(y1, Min(y2, y3));
 	int maxy = Max(y1, Max(y2, y3));
-
-
-
+	/*float  zmin= Min(z1, Min(z2, z3));
+	float zmax = Max(z1, Max(z2, z3));
+	float umin= Min(u1, Min(u2, u3));
+	float umax = Max(u1, Max(u2, u3));
+	float vmin= Min(v1, Min(v2, v3));
+	float vmax = Max(v1, Max(v2, v3));*/
 
 	for (int h = miny; h < maxy; h++)
 	{
 		for (int w = minx; w < maxx; w++)
 		{
+
+			
 			int vx0 = w - x1;
 			int vy0 = h - y1;
 			/*if (insideangle(vx1, vy1, vx2, vy2, vx3, vy3, vx0, vy0))
@@ -746,29 +771,103 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3, floa
 			float u = ((y2 - y1)*w + (x1 - x2)*h + x2 * y1 - x1 * y2)*k1;
 			float v = ((y3 - y1)*w + (x1 - x3)*h + x3 * y1 - x1 * y3)*k2;
 			float c = 1 - u - v;
-			if (u >= 0 && v >= 0 && c >= 0)
+			if (u >=0 && v >=0 && c >= 0)
 			{
-				Draw_UV(x1, y1, x2, y2, x3, y3, w, h, u, v);
-					float c = 1 - u - v;
+
+				if (h > 210) {
+					Draw_UV(x1, y1, x2, y2, x3, y3, w, h, u, v);
+					float c = 1.0f - u - v;
 					float ux1 = u2 - u1;
 					float uy1 = v2 - v1;
 					float ux2 = u3 - u1;
 					float uy2 = v3 - v1;
-					float ux3 =u3 - u2;
+					float ux3 = u3 - u2;
 					float uy3 = v3 - v3;
-					float ux0 =u1+u*ux1+v*ux2;
-					float uy0 = v1+u*uy1+v*uy2;
-				/*	float ux0 = c * u1 + u * u2 + v * u3;
-					float uy0 = c * v1 + u * v2 + v3 * v;*/
-					float width = 256.f * ux0;
-					float height = 256.f* uy0;
-					int de = width +256 *height;
+					float zx1 = 1/z2 - 1/z1;
+					float zx2 = 1/z3 -1/ z1;
+					if (zx1 == 0)
+					{
+						zx1 = 1;
+					}
+
+					if (zx2 == 0)
+					{
+						zx2 = 1;
+					}
+					float s = 0.f;
+					if (x2 - x1!= 0)
+					{
+						s = (w - x1) / (float)(x2 - x1);
+					}
+					
+					float t = 0.f;
+					if (x3 - x1 != 0)
+					{
+						t = (w - x1) / (float)(x3 - x1);
+						
+					}
+					
+					float zt = 1 / z2 + s*(1 / z2 - 1 / z1);
+
+			
+					/*float ux0 =u1+ux1*u+ux2*v;
+					float uy0 =v1+uy1*u+uy2*v;
+					*/
+					///*float ux0 = (u1/(float)z1 + u * (ux1/(float)zx1) + (ux2/(float)zx2) * v);
+					//float uy0 = v1/(float)z1 + (uy1 /(float)zx1)* u + (uy2/(float)zx2) * v;*/
+					/*float ux0 = zx0* (c*u1/z1  +   u2*v/z2 + u3 * u/z3);
+					float uy0 = zx0*(c*v1/z1  + v2 *  v/z2+ v3 * u/z3);*/
+
+
+					//float s = (ux0 - u1) / (float)(u2 - u1);
+
+					//float zt = 1 / z1 + s * (1 / z2 - 1 / z1);
+
+					zt = 1 / z1  + (1 / z2 -1/z1)* u + (1/z3-1/z1) * v;
+
+					/*float ux0 =  (u1 *c  + v*u2  + u*u3 );
+					float  uy0=  (v1 *c + v *v2 + u*v3);*/
+
+					 /*float ux0 =1/zt * (u1 *c/z1  + v*u2 / z2 + u*u3 / z3);
+					float  uy0= 1/zt * (v1 *c/z1 + v *v2/ z2 + u*v3 / z3);*/
+
+					float ux0 = 1 / zt * (u1/z1 + u * (u2/z2-u1/z1)+v*(u3/z3-u1/z1));
+					float  uy0 = 1 / zt * (v1 / z1 + u * (v2 / z2 - v1 / z1) + v * (v3 / z3 - v1 / z1));
+
+					float width = 255.f * ux0;
+					float height = 255.f* uy0;
+
+
+
+					int hde = ceil(width);
+					int lde = (UINT)width;
+					if (width - lde >= hde - width)
+					{
+						width = hde;
+					}
+					else
+					{
+						width = lde;
+					}
+
+					hde = ceil(height);
+					lde = (UINT)height;
+					if (height - lde >= hde - height)
+					{
+						height = hde;
+					}
+					else
+					{
+						height = lde;
+					}
+					int de = 256.f * height + width;
 
 					UINT color = img[de];
 					PutPixel(w, h, Color(color));
-				
 
+				}
 			}
+		
 
 
 		}
@@ -784,7 +883,7 @@ void Graphics::Draw_UV(float u1, float v1, float u2, float v2, float u3, float v
 
 bool Graphics::Draw_UV(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y, float& u, float& v)
 {
-	Vector2d v1(x2 - x1, y2 - y1);
+	/*Vector2d v1(x2 - x1, y2 - y1);
 	Vector2d v2(x3 - x1, y3 - y1);
 	Vector2d v3(x3 - x2, y3 - y2);
 	Vector2d v0(x - x1, y - y1);
@@ -792,11 +891,41 @@ bool Graphics::Draw_UV(int x1, int y1, int x2, int y2, int x3, int y3, int x, in
 	float s1= CrossProductF(v1.u, v1.v,v0.u, v0.v);
 	float s2 = CrossProductF(v0.u, v0.v,v2.u, v2.v);
 	float s3 = CrossProductF(v1.u, v1.v, v2.u, v2.v);
+	u = s1 / s;
+	v = s2 / s;*/
+
+	Vector2d v0(x2 - x1, y2 - y1);
+	Vector2d v1(x3 - x1, y3 - y1);
+	Vector2d v3(x3 - x2, y3 - y2);
+	Vector2d v2(x - x1, y - y1);
+
+	float dot00 = DotProduct(&v0, &v0);
+	float dot01 = DotProduct(&v0,&v1);
+	float dot02 = DotProduct(&v0, &v2);
+	float dot11 = DotProduct(&v1, &v1);
+	float dot12 = DotProduct(&v1, &v2);
 	
-	u= s1 / s;
-	v =s2 /s;
+	float ux = dot00 * dot11 - dot01 * dot01;
+	if (ux == 0)
+	{
+		u = 0;
+		v = 0;
+	}
+	else
+	{
+		u = (dot11*dot02 - dot01 * dot12) / (dot11*dot00 - dot01 * dot01);
+
+		v = (dot00*dot12 - dot01 * dot02) / (dot11*dot00 - dot01 * dot01);
+	}
+	
+	
+	
 
 	return u >= 0 && v >= 0 && u + v <= 1;
+
+
+
+
 }
 
 void Graphics::Drawline(int x1, int y1, int x2, int y2)

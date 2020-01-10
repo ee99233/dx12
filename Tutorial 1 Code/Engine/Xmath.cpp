@@ -108,8 +108,8 @@ void XMath::V4d_Mul_4X4(Vector4d  v, MATRIX4X4 & M, Vector4d &result)
 {
 	result.x = v.x*M.M[0][0] + v.y*M.M[1][0] + v.z*M.M[2][0] + v.w*M.M[3][0];
 	result.y = v.x*M.M[0][1] + v.y*M.M[1][1] + v.z*M.M[2][1] + v.w*M.M[3][1];
-	result.z = v.x*M.M[0][2] + v.y*M.M[1][2] + v.z*M.M[2][2] + v.w*M.M[2][3];
-	result.w = 1;
+	result.z = v.x*M.M[0][2] + v.y*M.M[1][2] + v.z*M.M[2][2] + v.w*M.M[3][2];
+	result.w = v.x*M.M[0][3] + v.y*M.M[1][3] + v.z*M.M[2][3] + v.w*M.M[3][3];
 	int i = 0;
 
 }

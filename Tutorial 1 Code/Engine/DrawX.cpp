@@ -7,6 +7,8 @@ DrawX::DrawX()
 
 	index = nullptr;
 	vertx = nullptr;
+	utex = nullptr;
+	tindex = nullptr;
 }
 
 
@@ -23,6 +25,21 @@ DrawX::~DrawX()
 	{
 		delete[] vertx;
 		vertx = nullptr;
+	}
+	if (tindex != nullptr)
+	{
+		delete[] tindex;
+		index = nullptr;
+	}
+	if (tempx != nullptr)
+	{
+		delete[] tempx;
+		tempx = nullptr;
+	}
+	if (utex != nullptr)
+	{
+		delete[] utex;
+		utex = nullptr;
 	}
 }
 
@@ -60,6 +77,23 @@ void DrawX::setindex(uint * in,int size)
 
 }
 
+void DrawX::settindex(uint * tindex, int size)
+{
+	if (this->tindex != nullptr)
+	{
+		delete[] this->tindex;
+		this->tindex = nullptr;
+	}
+	this->tindex = new uint[size];
+
+	for (int i = 0; i < size; i++)
+	{
+		this->tindex[i] = tindex[i];
+
+	}
+	int i = 0;
+}
+
 void DrawX::setvertx(Point4_Ptr ver,int size)
 {
 	if (vertx != nullptr)
@@ -80,6 +114,23 @@ void DrawX::setvertx(Point4_Ptr ver,int size)
 
 }
 
+void DrawX::settexcord(Point2_Ptr ver, int size)
+{
+	if (utex != nullptr)
+	{
+		delete[] utex;
+		utex = nullptr;
+	}
+	utex = new Vector2d[size];
+	for (int i = 0; i < size; i++)
+	{
+		utex[i].u = ver[i].u;
+		utex[i].v = ver[i].v;
+	}
+
+
+}
+
 void DrawX::DrawTri( Graphics& gfx)
 {
 	int b = 0;
@@ -91,7 +142,10 @@ void DrawX::DrawTri( Graphics& gfx)
 			Vector4d v1 = tempx[index[i]];
 			Vector4d v2 = tempx[index[i + 1]];
 			Vector4d v3 = tempx[index[i + 2]];
-			gfx.Draw_FillTri(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
+			Vector2d uv1 = utex[tindex[i]];
+			Vector2d uv2 = utex[tindex[i + 1]];
+			Vector2d uv3 = utex[tindex[i + 2]];
+			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z,uv1.u,uv1.v, uv2.u,uv2.v, uv3.u,uv3.v,gfx.img);
 		}
 		++b;
 	}
@@ -129,10 +183,10 @@ void DrawX::RelativetoWorld()
 		V4d_Mul_4X4(tempx[i],camera.getcam(),tempx[i]);
 	
 		V4d_Mul_4X4(tempx[i], camera.getmper(), tempx[i]);
-		tempx[i].x = tempx[i].x / tempx[i].z;
-		tempx[i].y = tempx[i].y / tempx[i].z;
-		tempx[i].z = tempx[i].z / tempx[i].z;
-		tempx[i].w = 1;
+		tempx[i].x = tempx[i].x / tempx[i].w;
+		tempx[i].y = tempx[i].y / tempx[i].w;
+		tempx[i].z =  tempx[i].w;
+		tempx[i].w = tempx[i].w / tempx[i].w;
 		V4d_Mul_4X4(tempx[i], camera.getmscr(), tempx[i]);
 		int j = 0;
 
@@ -154,7 +208,7 @@ void DrawX::BackRemove()
 		SubVector(tempx[index[i+1]], tempx[index[i + 2]], sub2);
 		CrossProduct(&cross,&sub1, &sub2);
 		NormlVecotr(&cross);
-		SubVector(camera.gettarget(), tempx[index[i]],sub3);
+		SubVector(camera.getpos(),tempx[index[i]],sub3);
 		NormlVecotr(&sub3);
 
 		float dot = DotProduct(&cross, &sub3);
@@ -172,6 +226,11 @@ void DrawX::BackRemove()
 		++b;
 	}
 
+}
+
+void DrawX::Setfar(float near1, float far1)
+{
+	camera.Setfar(near1, far1);
 }
 
 void DrawX::Rotate(MATRIX4X4 & r)

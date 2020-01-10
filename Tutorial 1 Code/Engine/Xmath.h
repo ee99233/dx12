@@ -43,11 +43,9 @@ namespace XMath
 		{
 			u = u1;
 			v = v1;
-			
-
 		}
 		Vector2d_Typ() {}
-	}Vector2d, *Vector2D_Ptr, Point2d, *Point2_Ptr;
+	}Vector2d, *Vector2D_Ptr, Point2d,*Point2_Ptr;
 
 	typedef struct MATRIX4X4_TYP 
 	{

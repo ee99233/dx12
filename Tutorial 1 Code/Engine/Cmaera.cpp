@@ -64,8 +64,9 @@ void Cmaera::initmper()
 	float d = viewplane_width / Tan((fov / 2.f));
 	Mat_Init_4X4(&mper, d/aspect_radio, 0, 0, 0,
 		0, d, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 1, 0);
+		0, 0, farview/(farview-nearview), 1,
+		0, 0, -(nearview*farview)/(farview - nearview), 0);
+	int i = 0;
 }
 
 void Cmaera::initmscr()
@@ -75,8 +76,8 @@ void Cmaera::initmscr()
 
 	Mat_Init_4X4(&mscr, a, 0, 0, 0,
 		0, -b, 0, 0,
-		0, 0, 1, 1,
-		a, b, 0, 0
+		0, 0, 1, 0,
+		a, b, 0, 1
 	);
 	int i = 0;
 
@@ -89,6 +90,12 @@ void Cmaera::SetPos(const Vector4d & pos)
 	this->pos.y = pos.y;
 	this->pos.z = pos.z;
 	this->pos.w = pos.w;
+}
+
+void Cmaera::Setfar(float near1, float far1)
+{
+	this->farview=far1;
+	this->nearview = near1;
 }
 
 void Cmaera::SetDir(const float Xangle, const float & Zangle)

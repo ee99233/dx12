@@ -75,6 +75,50 @@ void Game::initDrawX()
 	Vector4d(+1.0f, +1.0f, +1.0f),
 	Vector4d(+1.0f, -1.0f, +1.0f),
 	};
+
+	uint tindex[36] = {
+		0, 1, 2,
+		0, 2, 3,
+
+		// back face
+		4, 6, 5,
+		4, 7, 6,
+
+		// left face
+		4, 5, 1,
+		4, 1, 0,
+
+		// right face
+		3, 2, 6,
+		3, 6, 7,
+
+		
+		
+		// top face
+		0,1 ,2,
+		0,2, 3,
+
+		// bottom face
+		0, 1, 2,
+		0, 2,3,
+	
+	};
+
+	Vector2d t[12] = {
+		Vector2d(0.f,1.f),
+		Vector2d(0.f,0.f),
+		Vector2d(1.f,0.f),
+		Vector2d(1.f,1.f),
+		Vector2d(1.f,1.f),
+		Vector2d(1.f,0.f),
+		Vector2d(0.f,0.f),
+		Vector2d(0.f,1.f),
+		Vector2d(0.f,1.f),
+		Vector2d(0.f,0.f),
+		Vector2d(1.f,0.f),
+		Vector2d(1.f,1.f),
+	};
+
 	MATRIX4X4 mrz, mrx, mry;
 	
 	
@@ -82,12 +126,16 @@ void Game::initDrawX()
 	dx.setindex(index, 36);
 	dx.setvertx(v, 8);
 	
-	Vector4d v1(0, 0,0);
+	Vector4d v1(0, 0,10);
 	Vector4d dir(0, 0, 0);
+	dx.Setfar(10.f, 100.f);
 	dx.setCameraTarget(v1, dir);
-	float aspect = 800.f / 600.f;
+	float aspect = 1280.f / 720.f;
 	dx.SetScreen(aspect, 90.f, 1);
-	dx.SetReslotion(800, 600);
+	dx.SetReslotion(1280, 720);
+	dx.settexcord(t, 12);
+	dx.settindex(tindex, 36);
+	
 	gfx.Load2D();
 
 	
@@ -103,7 +151,7 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 
-	/*MATRIX4X4 mrz, mrx, mry;
+	MATRIX4X4 mrz, mrx, mry;
 	static float x = 0.f;
 	static float y =0.f;
 	static float z = 0.f;
@@ -143,13 +191,7 @@ void Game::ComposeFrame()
 		y += 1.f;
 		wnd.kbd.FlushKey();
 	}
-	if (wnd.kbd.KeyIsPressed('Z'))
-	{
 
-		z += 1.f;
-		wnd.kbd.FlushKey();
-	}
-	
 
 	dx.copytemp();
 	dx.Rotate(mrx);
@@ -159,17 +201,27 @@ void Game::ComposeFrame()
 	dx.BackRemove();
 	dx.RelativetoWorld();
 	dx.DrawTri(gfx);
-	gfx.PutPixel(400, 300, Color(111111000));*/
+	gfx.PutPixel(400, 300, Color(111111000));
 
-	gfx.Draw_FillTri(500, 100, 756, 100,500, 356,0.f,0.f,1.f,0.f,0.0f ,1.f,gfx.img);
-	gfx.Draw_FillTri(756, 356, 500, 356, 756, 100, 1.f, 1.f, 0.f, 1.f, 1.0f, 0.f, gfx.img);
+	static float s = 1.0f;
+	if (wnd.kbd.KeyIsPressed('S'))
+	{
+
+		s += 0.f;
+		wnd.kbd.FlushKey();
+	}
+
+
+	//gfx.Draw_FillTri(0.f, 0.f,0,200,200, 240,0,0,0.f,1.f,1.0f,1.0f,gfx.img);
+	//gfx.Draw_FillTri(0, 0, 200,0, 200, 200, 0.f, 0.f, 1.f, 0.f, 1.0f, 1.f, gfx.img);
+	//gfx.Draw_FillTri(0.f, 0.f, 0, 200, 200, 220);
 
 	for (int i = 0; i < 256; i++)
 	{
 		for (int j = 0; j < 256; j++)
 		{
 			UINT color = gfx.img[j+i*256];
-			gfx.PutPixel(i, j, Color(color));
+			gfx.PutPixel(j, i, Color(color));
 		}
 	}
 
