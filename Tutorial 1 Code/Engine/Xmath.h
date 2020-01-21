@@ -89,6 +89,8 @@ namespace XMath
 
 	void SubVector(Vector4d &v1, Vector4d &v2, Vector4d &v3);
 
+	void addVector(Vector4d &v1, Vector4d &v2, Vector4d &v3);
+
 	void Mat_Init_4X4(MATRIX4X4_PTR ma,
 		float m00, float m01, float m02, float m03,
 		float m10, float m11, float m12, float m13,
@@ -106,5 +108,10 @@ namespace XMath
 	float CrossProductF(int x1, int x2, int y1, int y2);
 
 	bool insideangle(int vx1, int vy1, int vx2, int vy2, int vx3, int vy3, int vx0, int vy0);
+
+
+	float dlength(float dmax, float dmin, float d);
+
+	float getlength(Vector4d &v1, Vector4d& v2);
 }
 

@@ -2,6 +2,7 @@
 #include "XMath.h"
 #include <vector>
 #include "Cmaera.h"
+#include "Light.h"
 using namespace XMath;
 typedef unsigned int uint;
 
@@ -11,6 +12,7 @@ public:
 	DrawX();
 	~DrawX();
 	void setWorldLocation(const Vector4d &world);
+	void setNorml();
 	void setindex(uint* in,int size);
 	void settindex(uint* tindex, int size);
 	void setvertx(Point4_Ptr ver,int size);
@@ -36,6 +38,10 @@ private:
 	Cmaera camera;
 	bool* isbackremove;
 	class poly* pol;
+	Light light[3];
+	int lightsize;
+	Point4_Ptr norml;
+	int normlsize;
 	
 };
 

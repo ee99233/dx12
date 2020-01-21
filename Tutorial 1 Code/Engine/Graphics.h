@@ -23,6 +23,7 @@
 #include <wrl.h>
 #include "ChiliException.h"
 #include "Colors.h"
+#include "Light.h"
 
 class Graphics
 {
@@ -65,7 +66,7 @@ public:
 
 	void Draw_TopTri(int x1, int y1, int x2, int y2, int x3, int y3,int u0,int v0,int u1,int v1,int u2,int v2);
 	void Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3);
-	void Draw_FillTri(int x1, int y1,float z1, int x2, int y2,float z2, int x3, int y3,float z3,float u1,float v1,float u2,float v2,float u3,float v3,UINT* img);
+	void Draw_FillTri(int x1, int y1,float z1, int x2, int y2,float z2, int x3, int y3,float z3,float u1,float v1,float u2,float v2,float u3,float v3,UINT* img,Light *light,const class Cmaera  &camera,Vector4d norml);
 	void Draw_UV(float u1, float v1, float u2, float v2, float u3, float v3, float& u, float& v);
 	bool Draw_UV(int x1,int y1,int x2,int y2,int x3,int y3,int x,int y,float& u,float& v);
 	void Load2D();

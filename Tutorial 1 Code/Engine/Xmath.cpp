@@ -76,6 +76,14 @@ void XMath::SubVector(Vector4d & v1, Vector4d & v2, Vector4d & v3)
 
 }
 
+void XMath::addVector(Vector4d & v1, Vector4d & v2, Vector4d & v3)
+{
+	v3.x = v1.x + v2.x;
+	v3.y = v1.y + v2.y;
+	v3.z = v1.z + v2.z;
+	v3.w = 1;
+}
+
 void XMath::Mat_Init_4X4(MATRIX4X4_PTR ma, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
 {
 	ma->M00 = m00; ma->M01 = m01; ma->M02 = m02; ma->M03 = m03;
@@ -148,5 +156,31 @@ bool XMath::insideangle(int vx1, int vy1, int vx2, int vy2, int vx3, int vy3, in
 	float v = s3 / s1;
 	float c = 1.f - u - v;
 	return u >= 0 && v >= 0 && c >= 0;
+}
+
+float XMath::dlength(float dmax, float dmin, float d)
+{
+	if (d <= 0.f)
+	{
+		return 0.f;
+	}
+	else if (d >= 1.0f)
+	{
+		return 1.0f;
+	}
+	else
+	{
+		return dmax - d / dmax - dmin;
+	}
+}
+
+float XMath::getlength(Vector4d & v1, Vector4d & v2)
+{
+
+	float x = v1.x - v2.x;
+	float y = v1.y - v2.y;
+	float z = v1.z - v2.z;
+
+	return sqrt(x*x + y * y + z * z);
 }
 

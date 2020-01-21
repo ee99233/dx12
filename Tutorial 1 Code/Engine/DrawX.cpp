@@ -54,6 +54,30 @@ void DrawX::setWorldLocation(const Vector4d & world)
 	}
 }
 
+void DrawX::setNorml()
+{
+	int k = 0;
+	for (int i = 0; i < isize; i += 3)
+	{
+
+		Vector4d v1 = tempx[index[i]];
+		Vector4d v2 = tempx[index[i + 1]];
+		Vector4d v3 = tempx[index[i + 2]];
+		Vector4d sub1,sub2;
+
+		SubVector(v1, v2, sub1);
+		SubVector(v1, v3, sub2);
+		NormlVecotr(&sub1);
+		NormlVecotr(&sub2);
+		Vector4d Cross;
+		CrossProduct(&Cross,&sub1,&sub2);
+		norml[k] = Cross;
+		++k;
+	}
+
+
+}
+
 
 
 
@@ -145,7 +169,8 @@ void DrawX::DrawTri( Graphics& gfx)
 			Vector2d uv1 = utex[tindex[i]];
 			Vector2d uv2 = utex[tindex[i + 1]];
 			Vector2d uv3 = utex[tindex[i + 2]];
-			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z,uv1.u,uv1.v, uv2.u,uv2.v, uv3.u,uv3.v,gfx.img);
+			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z,uv1.u,uv1.v, uv2.u,uv2.v, uv3.u,uv3.v,gfx.img,light,camera
+			);
 		}
 		++b;
 	}

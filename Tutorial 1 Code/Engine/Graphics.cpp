@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <array>
 #include "Xmath.h"
+#include "Cmaera.h"
 #include <D3D11.h>
 #include <D3DX11tex.h>
 
@@ -705,7 +706,7 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 
 }
 
-void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img)
+void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img, Light *light, const  Cmaera &camera,Vector4d norml)
 {
 
 	/*if (x1 > x2)
@@ -863,7 +864,71 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 					int de = 256.f * height + width;
 
 					UINT color = img[de];
-					PutPixel(w, h, Color(color));
+					Color col(color);
+					Color tol;
+
+					for (int i = 0; i < 3; i++)
+					{
+						if (light[i].getlightype == Lighttype::Csepc)
+						{
+							
+							Vector4d target = light[i].getpostion();
+							Vector4d v = camera.gettarget();
+
+							NormlVecotr(&target);
+							NormlVecotr(&v);
+
+							Vector4d h;
+							addVector(target, v, h);
+							
+							float length = sqrt(h.x*h.x + h.y*h.y + h.z*h.z);
+
+							h.x = h.x / length;
+							h.y = h.y / length;
+							h.z = h.z / length;
+
+							float flenght = getlength(target, v);
+
+							float alpha =fmax(DotProduct(&h,&norml),0.f);
+							UINT r = light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
+							UINT g = light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
+							UINT b = light[i].getb()*alpha *col.GetB() *dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
+							tol.SetR(r);
+							tol.SetG(g);
+							tol.SetR(b);
+
+						
+						}
+						else if (light[i].getlightype == Lighttype::Cdiff)
+						{
+							Vector4d target = light[i].getpostion();
+							Vector4d v = camera.gettarget();	
+							NormlVecotr(&target);
+							NormlVecotr(&v);
+							float flenght = getlength(target, v);
+							float alpha = fmax(DotProduct(&target, &norml),0.f);
+							UINT r =light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
+							UINT g =light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
+							UINT b =light[i].getb()*alpha *col.GetB()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
+							tol.SetR(r);
+							tol.SetG(g);
+							tol.SetR(b);
+						}
+						else
+						{
+							UINT r = light[i].getr()*col.GetR() + tol.GetR();
+							UINT g = light[i].getg()*col.GetG() + tol.GetG();
+							UINT b = light[i].getb()*col.GetB() + tol.GetB();
+							tol.SetR(r);
+							tol.SetG(g);
+							tol.SetR(b);
+
+						}
+
+					}
+
+
+					PutPixel(w, h, Color(tol));
 
 				}
 			}
