@@ -381,7 +381,9 @@ void Graphics::EndFrame()
 	// perform the copy line-by-line
 	for( size_t y = 0u; y < Graphics::ScreenHeight; y++ )
 	{
+		
 		memcpy( &pDst[ y * dstPitch ],&pSysBuffer[y * srcPitch],rowBytes );
+		
 	}
 	// release the adapter memory
 	pImmediateContext->Unmap( pSysBufferTexture.Get(),0u );
@@ -637,7 +639,7 @@ void Graphics::Draw_TopTri(int x1, int y1, int x2, int y2, int x3, int y3, int u
 
 }
 
-void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
+void Graphics::Draw_FillTri(float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	if (y1 > y2)
 	{
@@ -653,6 +655,8 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 	}
 
 	
+	float SamplesX[] = { 0.0f / 2.0f,  1.0 / 2.0f,  0.0 / 2.0f, -1.0 / 2.0f };
+	float SamplesY[] = { -1.0f / 2.0f,  0.0 / 2.0f,  1.0 / 2.0f,  0.0 / 2.0f };
 
 	int vx1 = x2 - x1;
 	int vy1 = y2 - y1;
@@ -668,10 +672,10 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 	k1 = 1 / k1;
 	k2 = 1 / k2;
 	k3 = 1 / k3;
-	int minx =Min(x1, Min(x2, x3));
-	int maxx = Max(x1, Max(x2, x3));
-	int miny = Min(y1, Min(y2, y3));
-	int maxy = Max(y1, Max(y2, y3));
+	int minx =Min(roundf(x1), Min(roundf(x2), roundf(x3)));
+	int maxx = Max(roundf(x1), Max(roundf(x2), roundf(x3)));
+	int miny = Min(roundf(y1), Min(roundf(y2), roundf(y3)));
+	int maxy = Max(roundf(y1), Max(roundf(y2), roundf(y3)));
 
 	
 
@@ -687,13 +691,96 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 				PutPixel(w, h, Color(1111111100));
 			}
 */			
-			float u = ((y2 - y1)*w + (x1 - x2)*h + x2 * y1 - x1 * y2)*k1;
-			float v= ((y3 - y1)*w + (x1 - x3)*h + x3 * y1 - x1 * y3)*k2;
-			float c = 1 - u - v;
-			if (u >= 0 && v >= 0 && c >= 0)
+			float u = 0.0f;
+			float v = 0.0f;
+			float c= 0.0f;
+
+			float width = (float)w;
+			float height = (float)h;
+
+
+
+			if (Draw_UV(x1, y1, x2, y2, x3, y3, width, height, u, v))
 			{
-				PutPixel(w, h, Color(1111111100));
+				float colo = 255.f;
+				/*;
+				float w1 = width + 0.5;
+				float h1 = height + 0.5;
+
+				float w2 = width - 0.5;
+				float h2 = height - 0.5;
+
+				float w3 = width + 0.5;
+				float h3 = height -0.5;
+
+				float w4 = width - 0.5;
+				float h4 = height + 0.5;*/
+
+				float w1 = width + SamplesX[0];
+				float h1 = height + SamplesY[0];
+
+				float w2 = width + SamplesX[1];
+				float h2 = height + SamplesY[1];
+
+				float w3 = width + SamplesX[2];
+				float h3 = height + SamplesY[2];
+
+				float w4 = width + SamplesX[3];
+				float h4 = height + SamplesY[3];
+
+				float total = 4.0f;
+				float weight = 0.0f;
+				/*if (u == 1 && v == 1 && 1 - u + v == 1)
+				{*/
+					if (Draw_UV(x1, y1, x2, y2, x3, y3, w1, h1, u, v))
+					{
+						++weight;
+					}
+
+
+					if (Draw_UV(x1, y1, x2, y2, x3, y3, w2, h2, u, v))
+					{
+
+
+						++weight;
+					}
+
+
+					if (Draw_UV(x1, y1, x2, y2, x3, y3, w3, h3, u, v))
+					{
+
+
+						++weight;
+
+					}
+
+
+					if (Draw_UV(x1, y1, x2, y2, x3, y3, w4, h4, u, v))
+					{
+
+
+						++weight;
+
+					}
+
+					float we = (float)weight / (float)total;
+					float alpha = (255.0f*we)/255.0f;
+					int co = colo * we;
+
+					PutPixel(w, h, Color(colo * we));
+				/*}
+				else
+				{
+					PutPixel(w, h, Color(colo));
+				}
+			*/
+			
 			}
+
+			
+
+
+			
 
 
 		}
@@ -867,65 +954,65 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 					Color col(color);
 					Color tol;
 
-					for (int i = 0; i < 3; i++)
-					{
-						if (light[i].getlightype == Lighttype::Csepc)
-						{
-							
-							Vector4d target = light[i].getpostion();
-							Vector4d v = camera.gettarget();
+					//for (int i = 0; i < 3; i++)
+					//{
+					//	if (light[i].getlightype == Lighttype::Csepc)
+					//	{
+					//		
+					//		Vector4d target = light[i].getpostion();
+					//		Vector4d v = camera.gettarget();
 
-							NormlVecotr(&target);
-							NormlVecotr(&v);
+					//		NormlVecotr(&target);
+					//		NormlVecotr(&v);
 
-							Vector4d h;
-							addVector(target, v, h);
-							
-							float length = sqrt(h.x*h.x + h.y*h.y + h.z*h.z);
+					//		Vector4d h;
+					//		addVector(target, v, h);
+					//		
+					//		float length = sqrt(h.x*h.x + h.y*h.y + h.z*h.z);
 
-							h.x = h.x / length;
-							h.y = h.y / length;
-							h.z = h.z / length;
+					//		h.x = h.x / length;
+					//		h.y = h.y / length;
+					//		h.z = h.z / length;
 
-							float flenght = getlength(target, v);
+					//		float flenght = getlength(target, v);
 
-							float alpha =fmax(DotProduct(&h,&norml),0.f);
-							UINT r = light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
-							UINT g = light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
-							UINT b = light[i].getb()*alpha *col.GetB() *dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
-							tol.SetR(r);
-							tol.SetG(g);
-							tol.SetR(b);
+					//		float alpha =fmax(DotProduct(&h,&norml),0.f);
+					//		UINT r = light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
+					//		UINT g = light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
+					//		UINT b = light[i].getb()*alpha *col.GetB() *dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
+					//		tol.SetR(r);
+					//		tol.SetG(g);
+					//		tol.SetR(b);
 
-						
-						}
-						else if (light[i].getlightype == Lighttype::Cdiff)
-						{
-							Vector4d target = light[i].getpostion();
-							Vector4d v = camera.gettarget();	
-							NormlVecotr(&target);
-							NormlVecotr(&v);
-							float flenght = getlength(target, v);
-							float alpha = fmax(DotProduct(&target, &norml),0.f);
-							UINT r =light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
-							UINT g =light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
-							UINT b =light[i].getb()*alpha *col.GetB()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
-							tol.SetR(r);
-							tol.SetG(g);
-							tol.SetR(b);
-						}
-						else
-						{
-							UINT r = light[i].getr()*col.GetR() + tol.GetR();
-							UINT g = light[i].getg()*col.GetG() + tol.GetG();
-							UINT b = light[i].getb()*col.GetB() + tol.GetB();
-							tol.SetR(r);
-							tol.SetG(g);
-							tol.SetR(b);
+					//	
+					//	}
+					//	else if (light[i].getlightype == Lighttype::Cdiff)
+					//	{
+					//		Vector4d target = light[i].getpostion();
+					//		Vector4d v = camera.gettarget();	
+					//		NormlVecotr(&target);
+					//		NormlVecotr(&v);
+					//		float flenght = getlength(target, v);
+					//		float alpha = fmax(DotProduct(&target, &norml),0.f);
+					//		UINT r =light[i].getr()*alpha *col.GetR()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetR();
+					//		UINT g =light[i].getg()*alpha *col.GetG()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetG();
+					//		UINT b =light[i].getb()*alpha *col.GetB()*dlength(light[i].getdmax(), light[i].getdmin(), flenght) + tol.GetB();
+					//		tol.SetR(r);
+					//		tol.SetG(g);
+					//		tol.SetR(b);
+					//	}
+					//	else
+					//	{
+					//		UINT r = light[i].getr()*col.GetR() + tol.GetR();
+					//		UINT g = light[i].getg()*col.GetG() + tol.GetG();
+					//		UINT b = light[i].getb()*col.GetB() + tol.GetB();
+					//		tol.SetR(r);
+					//		tol.SetG(g);
+					//		tol.SetR(b);
 
-						}
+					//	}
 
-					}
+					//}
 
 
 					PutPixel(w, h, Color(tol));
@@ -939,9 +1026,45 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 	}
 }
 
-void Graphics::Draw_UV(float u1, float v1, float u2, float v2, float u3, float v3, float & u, float & v)
+bool Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y, float& u, float& v)
 {
 
+
+/*	Vector2d v1(x2 - x1, y2 - y1);
+	Vector2d v2(x3 - x1, y3 - y1);
+	Vector2d v3(x3 - x2, y3 - y2);
+	Vector2d v0(x - x1, y - y1);
+	float s = CrossProductF(v1.u,v1.v,v2.u,v2.v);
+	float s1= CrossProductF(v1.u, v1.v,v0.u, v0.v);
+	float s2 = CrossProductF(v0.u, v0.v,v2.u, v2.v);
+	float s3 = CrossProductF(v1.u, v1.v, v2.u, v2.v);
+	u = s1 / s;
+	v = s2 / s*/;
+
+	Vector2d v0(x2 - x1, y2 - y1);
+	Vector2d v1(x3 - x1, y3 - y1);
+	Vector2d v3(x3 - x2, y3 - y2);
+	Vector2d v2(x - x1, y - y1);
+
+	float dot00 = DotProduct(&v0, &v0);
+	float dot01 = DotProduct(&v0, &v1);
+	float dot02 = DotProduct(&v0, &v2);
+	float dot11 = DotProduct(&v1, &v1);
+	float dot12 = DotProduct(&v1, &v2);
+
+	float ux = dot00 * dot11 - dot01 * dot01;
+	if (ux == 0)
+	{
+		u = 0;
+		v = 0;
+	}
+	else
+	{
+		u = (dot11*dot02 - dot01 * dot12) / (dot11*dot00 - dot01 * dot01);
+
+		v = (dot00*dot12 - dot01 * dot02) / (dot11*dot00 - dot01 * dot01);
+	}
+	return u >= 0 && v >= 0 && u + v <= 1;
 }
 
 

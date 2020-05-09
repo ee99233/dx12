@@ -26,6 +26,7 @@ public:
 	void Setfar(float near1, float far1);
 	void Rotate(MATRIX4X4 &r);
 	void copytemp();
+	Cmaera camera;
 private:
 	uint* index;
 	uint* tindex;
@@ -35,7 +36,6 @@ private:
 	Point2d* utex;
 	int vsize;
 	int bsize;
-	Cmaera camera;
 	bool* isbackremove;
 	class poly* pol;
 	Light light[3];
