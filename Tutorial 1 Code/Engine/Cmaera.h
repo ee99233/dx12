@@ -16,6 +16,7 @@ public:
 	 void SetDir(const float Xangle, const float& Zangle);
 	 void SetScreen(float aspect_radio, float fov,int iewport_width);
 	 void SetReslotion(float screenwidth, float screenheight);
+	 void TemporalAASample();
 	 Point4d getpos() const
 	 {
 		 return pos;
@@ -23,6 +24,15 @@ public:
 	 Point4d gettarget() const
 	 {
 		 return target;
+	 }
+
+	 float getjx() const
+	 {
+		 return JitterX;
+	 }
+	 float getjy() const
+	 {
+		 return JitterY;
 	 }
 	 MATRIX4X4 getcam() const ;
 	 MATRIX4X4 getmscr() const;
@@ -49,5 +59,8 @@ private:
 	MATRIX4X4 mcam; //uvn
 	MATRIX4X4 mper; //Õ∏ ”±‰ªªæÿ’Û
 	MATRIX4X4 mscr; //∆¡ƒª±‰ªªæÿ’Û
+	int hutn = 0;
+	float JitterX;
+	float JitterY;
 };
 

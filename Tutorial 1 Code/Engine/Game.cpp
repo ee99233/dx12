@@ -126,7 +126,7 @@ void Game::initDrawX()
 	dx.setindex(index, 36);
 	dx.setvertx(v, 8);
 	
-	Vector4d v1(0, 0,10);
+	Vector4d v1(0, 0,8);
 	Vector4d dir(0, 0, 0);
 	dx.Setfar(10.f, 100.f);
 	dx.setCameraTarget(v1, dir);
@@ -151,8 +151,9 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 
+	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
-	static float x = 0.f;
+	static float x = 10.f;
 	static float y =0.f;
 	static float z = 0.f;
 
@@ -174,9 +175,6 @@ void Game::ComposeFrame()
 		0, 0, 0, 1
 	);
 
-	gfx.Drawline(50, 50, 100, 100);
-	gfx.DrawTri(50, 200,100 ,100,200,200 );
-	gfx.Drawline(50, 200, 100, 100);
 	
 	if (wnd.kbd.KeyIsPressed('X'))
 	{
@@ -197,11 +195,13 @@ void Game::ComposeFrame()
 	dx.Rotate(mrx);
 	dx.Rotate(mrz);
 	dx.Rotate(mry);
+	
 	dx.setWorldLocation(Vector4d(0.f, 0.f, 5.f));
+	dx.TemporAASapmle();
 	dx.BackRemove();
 	dx.RelativetoWorld();
 	dx.DrawTri(gfx);
-	gfx.PutPixel(400, 300, Color(111111000));
+	//gfx.PutPixel(400, 300, Color(111111000));
 
 	static float s = 1.0f;
 	if (wnd.kbd.KeyIsPressed('S'))
@@ -214,17 +214,32 @@ void Game::ComposeFrame()
 
 	//gfx.Draw_FillTri(0.f, 0.f,0,200,200, 240,0,0,0.f,1.f,1.0f,1.0f,gfx.img);
 	//gfx.Draw_FillTri(0, 0, 200,0, 200, 200, 0.f, 0.f, 1.f, 0.f, 1.0f, 1.f, gfx.img);
-	//gfx.Draw_FillTri(0.f, 0.f, 0, 200, 200, 220);
-
-	for (int i = 0; i < 256; i++)
+	gfx.Draw_FillTri(20.f, 20.f, 10, 200, 200, 220);
+	gfx.Bresenhamline(20.f, 20.f, 10, 100);
+	//for (int i = 0; i < 256; i++)
+	//{
+	//	for (int j = 0; j < 256; j++)
+	//	{
+	//		UINT color = gfx.img[j+i*256];
+	//		gfx.PutPixel(j, i, Color(color));
+	//	}
+	//}
+	/*if (!process)
 	{
-		for (int j = 0; j < 256; j++)
-		{
-			UINT color = gfx.img[j+i*256];
-			gfx.PutPixel(j, i, Color(color));
-		}
+		gfx.CopyColor();
+		++process;
 	}
+	else
+	{
+		gfx.postprocessTemporaa(dx.getjx(), dx.getjy());
+		gfx.CopyColor();
+	}*/
+	
+	gfx.postprocessTemporaa(dx.getjx(),dx.getjy());
+	gfx.CopyColor();
 
+	
+	
 	/*gfx.Draw_tr(100.f,100.f,150.f,200.f,50.f,200.f);
 
 	gfx.Draw_tr(100.f, 100.f, 150.f, 100.f, 50.f, 200.f);

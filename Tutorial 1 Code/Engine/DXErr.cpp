@@ -27,7 +27,7 @@
 #include <dinputd.h>
 #endif
 
-#include <d3d10_1.h>
+//#include <d3d10_1.h>
 #include <d3d11_1.h>
 
 #if !defined(WINAPI_FAMILY) || WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP

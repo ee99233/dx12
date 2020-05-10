@@ -26,8 +26,8 @@
 #include <array>
 #include "Xmath.h"
 #include "Cmaera.h"
-#include <D3D11.h>
-#include <D3DX11tex.h>
+#include "D3D11.h"
+#include "D3DX11tex.h"
 
 
 using namespace std;
@@ -245,6 +245,10 @@ Graphics::Graphics( HWNDKey& key )
 	// allocate memory for sysbuffer (16-byte aligned for faster access)
 	pSysBuffer = reinterpret_cast<Color*>( 
 		_aligned_malloc( sizeof( Color ) * Graphics::ScreenWidth * Graphics::ScreenHeight,16u ) );
+
+	prevpSysBuffer = reinterpret_cast<Color*>(
+		_aligned_malloc(sizeof(Color) * Graphics::ScreenWidth * Graphics::ScreenHeight, 16u));
+
 }
 
 void Graphics::Load2D()
@@ -357,6 +361,11 @@ Graphics::~Graphics()
 	if( pSysBuffer )
 	{
 		_aligned_free( pSysBuffer );
+		pSysBuffer = nullptr;
+	}
+	if (prevpSysBuffer)
+	{
+		_aligned_free(pSysBuffer);
 		pSysBuffer = nullptr;
 	}
 	// clear the state of the device context before destruction
@@ -637,6 +646,54 @@ void Graphics::Draw_TopTri(int x1, int y1, int x2, int y2, int x3, int y3, int u
 
 }
 
+void Graphics::Bresenhamline(int x1, int y1, int x2, int y2)
+{
+	int x, y, dx, dy, s1, s2, p, temp, interchange, i;
+	x = x1;
+	y = y1;
+	dx = abs(x2 - x1);
+	dy = abs(y2 - y1);
+
+	if (x2 > x1)
+		s1 = 1;
+	else
+		s1 = -1;
+
+	if (y2 > y1)
+		s2 = 1;
+	else
+		s2 = -1;
+
+	if (dy > dx)
+	{
+		temp = dx;
+		dx = dy;
+		dy = temp;
+		interchange = 1;
+	}
+	else
+		interchange = 0;
+
+	p = 2 * dy - dx;
+	for (i = 1; i <= dx; i++)
+	{
+		PutPixel(x, y, Color(1111111000));
+		if (p >= 0)
+		{
+			if (interchange== 0)
+				y = y + s2;
+			else
+				x = x + s1;
+			p = p - 2 * dx;
+		}
+		if (interchange == 0)
+			x = x + s1;
+		else
+			y = y + s2;
+		p = p + 2 * dy;
+	}
+}
+
 void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 {
 	if (y1 > y2)
@@ -687,10 +744,12 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 				PutPixel(w, h, Color(1111111100));
 			}
 */			
-			float u = ((y2 - y1)*w + (x1 - x2)*h + x2 * y1 - x1 * y2)*k1;
+			/*float u = ((y2 - y1)*w + (x1 - x2)*h + x2 * y1 - x1 * y2)*k1;
 			float v= ((y3 - y1)*w + (x1 - x3)*h + x3 * y1 - x1 * y3)*k2;
-			float c = 1 - u - v;
-			if (u >= 0 && v >= 0 && c >= 0)
+			float c = 1 - u - v;*/
+			float u = 0.0f;
+			float v = 0.0f;
+			if (Draw_UV(x1,y1,x2,y2,x3,y3,w,h,u,v))
 			{
 				PutPixel(w, h, Color(1111111100));
 			}
@@ -699,12 +758,182 @@ void Graphics::Draw_FillTri(int x1, int y1, int x2, int y2, int x3, int y3)
 		}
 	}
 
-
-
-
-
-
 }
+
+
+
+
+void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img)
+{
+
+	/*if (x1 > x2)
+	{
+		swap(x1, x2);
+		swap(y1,y2);
+		swap(z1, z2);
+		swap(u1, u2);
+	}
+	if (x1 > x3)
+	{
+		swap(x1, x3);
+		swap(y1, y3);
+		swap(z1, z3);
+		swap(u1, u3);
+	}
+	if (x2 > x3)
+	{
+		swap(x2, x3);
+		swap(y2, y3);
+		swap(z2, z3);
+		swap(u2, u3);
+	}*/
+
+	int vx1 = x2 - x1;
+	int vy1 = y2 - y1;
+	int vx2 = x3 - x1;
+	int vy2 = y3 - y1;
+	int vx3 = x2 - x3;
+	int vy3 = y2 - y3;
+
+	float k1 = (y2 - y1)*x3 + (x1 - x2)*y3 + x2 * y1 - x1 * y2;
+	float k2 = (y3 - y1)*x2 + (x1 - x3)*y2 + x3 * y1 - x1 * y3;
+	float k3 = (y3 - y2)*x1 + (x3 - x2)*y1 + x3 * y2 - x2 * y2;
+
+	k1 = 1 / k1;
+	k2 = 1 / k2;
+	k3 = 1 / k3;
+	int minx = Min(x1, Min(x2, x3));
+	int maxx = Max(x1, Max(x2, x3));
+	int miny = Min(y1, Min(y2, y3));
+	int maxy = Max(y1, Max(y2, y3));
+	/*float  zmin= Min(z1, Min(z2, z3));
+	float zmax = Max(z1, Max(z2, z3));
+	float umin= Min(u1, Min(u2, u3));
+	float umax = Max(u1, Max(u2, u3));
+	float vmin= Min(v1, Min(v2, v3));
+	float vmax = Max(v1, Max(v2, v3));*/
+
+	for (int h = miny; h < maxy; h++)
+	{
+		for (int w = minx; w < maxx; w++)
+		{
+
+
+			int vx0 = w - x1;
+			int vy0 = h - y1;
+			/*if (insideangle(vx1, vy1, vx2, vy2, vx3, vy3, vx0, vy0))
+			{
+				PutPixel(w, h, Color(1111111100));
+			}
+*/
+			float u = ((y2 - y1)*w + (x1 - x2)*h + x2 * y1 - x1 * y2)*k1;
+			float v = ((y3 - y1)*w + (x1 - x3)*h + x3 * y1 - x1 * y3)*k2;
+			float c = 1 - u - v;
+			if (u >= 0 && v >= 0 && c >= 0)
+			{
+
+				if (h > 210) {
+					Draw_UV(x1, y1, x2, y2, x3, y3, w, h, u, v);
+					float c = 1.0f - u - v;
+					float ux1 = u2 - u1;
+					float uy1 = v2 - v1;
+					float ux2 = u3 - u1;
+					float uy2 = v3 - v1;
+					float ux3 = u3 - u2;
+					float uy3 = v3 - v3;
+					float zx1 = 1 / z2 - 1 / z1;
+					float zx2 = 1 / z3 - 1 / z1;
+					if (zx1 == 0)
+					{
+						zx1 = 1;
+					}
+
+					if (zx2 == 0)
+					{
+						zx2 = 1;
+					}
+					float s = 0.f;
+					if (x2 - x1 != 0)
+					{
+						s = (w - x1) / (float)(x2 - x1);
+					}
+
+					float t = 0.f;
+					if (x3 - x1 != 0)
+					{
+						t = (w - x1) / (float)(x3 - x1);
+
+					}
+
+					float zt = 1 / z2 + s * (1 / z2 - 1 / z1);
+
+
+					/*float ux0 =u1+ux1*u+ux2*v;
+					float uy0 =v1+uy1*u+uy2*v;
+					*/
+					///*float ux0 = (u1/(float)z1 + u * (ux1/(float)zx1) + (ux2/(float)zx2) * v);
+					//float uy0 = v1/(float)z1 + (uy1 /(float)zx1)* u + (uy2/(float)zx2) * v;*/
+					/*float ux0 = zx0* (c*u1/z1  +   u2*v/z2 + u3 * u/z3);
+					float uy0 = zx0*(c*v1/z1  + v2 *  v/z2+ v3 * u/z3);*/
+
+
+					//float s = (ux0 - u1) / (float)(u2 - u1);
+
+					//float zt = 1 / z1 + s * (1 / z2 - 1 / z1);
+
+					zt = 1 / z1 + (1 / z2 - 1 / z1)* u + (1 / z3 - 1 / z1) * v;
+
+					/*float ux0 =  (u1 *c  + v*u2  + u*u3 );
+					float  uy0=  (v1 *c + v *v2 + u*v3);*/
+
+					/*float ux0 =1/zt * (u1 *c/z1  + v*u2 / z2 + u*u3 / z3);
+				   float  uy0= 1/zt * (v1 *c/z1 + v *v2/ z2 + u*v3 / z3);*/
+
+					float ux0 = 1 / zt * (u1 / z1 + u * (u2 / z2 - u1 / z1) + v * (u3 / z3 - u1 / z1));
+					float  uy0 = 1 / zt * (v1 / z1 + u * (v2 / z2 - v1 / z1) + v * (v3 / z3 - v1 / z1));
+
+					float width = 255.f * ux0;
+					float height = 255.f* uy0;
+
+
+
+					int hde = ceil(width);
+					int lde = (UINT)width;
+					if (width - lde >= hde - width)
+					{
+						width = hde;
+					}
+					else
+					{
+						width = lde;
+					}
+
+					hde = ceil(height);
+					lde = (UINT)height;
+					if (height - lde >= hde - height)
+					{
+						height = hde;
+					}
+					else
+					{
+						height = lde;
+					}
+					int de = 256.f * height + width;
+
+					UINT color = img[de];
+					Color col(color);
+					Color tol;
+					PutPixel(w, h, color);
+
+				}
+			}
+
+
+
+		}
+	}
+}
+
 
 void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img, Light *light, const  Cmaera &camera,Vector4d norml)
 {
@@ -867,11 +1096,11 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 					Color col(color);
 					Color tol;
 
-					for (int i = 0; i < 3; i++)
+					/*for (int i = 0; i < 3; i++)
 					{
 						if (light[i].getlightype == Lighttype::Csepc)
 						{
-							
+
 							Vector4d target = light[i].getpostion();
 							Vector4d v = camera.gettarget();
 
@@ -880,7 +1109,7 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 
 							Vector4d h;
 							addVector(target, v, h);
-							
+
 							float length = sqrt(h.x*h.x + h.y*h.y + h.z*h.z);
 
 							h.x = h.x / length;
@@ -897,12 +1126,12 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 							tol.SetG(g);
 							tol.SetR(b);
 
-						
+
 						}
 						else if (light[i].getlightype == Lighttype::Cdiff)
 						{
 							Vector4d target = light[i].getpostion();
-							Vector4d v = camera.gettarget();	
+							Vector4d v = camera.gettarget();
 							NormlVecotr(&target);
 							NormlVecotr(&v);
 							float flenght = getlength(target, v);
@@ -925,10 +1154,10 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 
 						}
 
-					}
+					}*/
 
 
-					PutPixel(w, h, Color(tol));
+					PutPixel(w, h, color);
 
 				}
 			}
@@ -1065,6 +1294,55 @@ void Graphics::PutPixel( int x,int y,Color c )
 	assert( y >= 0 );
 	assert( y < int( Graphics::ScreenHeight ) );
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
+}
+
+void Graphics::postprocessTemporaa(float jx, float jy)
+{
+	static const float SampleOffsets[9][2] =
+	{
+		{ -1.0f, -1.0f },
+		{  0.0f, -1.0f },
+		{  1.0f, -1.0f },
+		{ -1.0f,  0.0f },
+		{  0.0f,  0.0f },
+		{  1.0f,  0.0f },
+		{ -1.0f,  1.0f },
+		{  0.0f,  1.0f },
+		{  1.0f,  1.0f },
+	};
+
+
+
+	float weight = expf(-2.29f * (jx * jx + jy * jy));
+	for (int y = 0; y < ScreenHeight; ++y)
+	{
+		for (int x = 0; x < ScreenWidth; ++x)
+		{
+		
+			unsigned char r = 0.05* pSysBuffer[Graphics::ScreenWidth * y + x].GetR()*weight + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95;
+			unsigned char g = 0.05* pSysBuffer[Graphics::ScreenWidth * y + x].GetG()*weight + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95;
+			unsigned char b = 0.05* pSysBuffer[Graphics::ScreenWidth * y + x].GetB()*weight + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95;
+			
+
+			pSysBuffer[Graphics::ScreenWidth * y + x].SetR(r);
+			pSysBuffer[Graphics::ScreenWidth * y + x].SetB(b);
+			pSysBuffer[Graphics::ScreenWidth * y + x].SetG(g);
+		}
+	}
+
+
+	
+}
+
+void Graphics::CopyColor()
+{
+	for (int y = 0; y < ScreenHeight; ++y)
+	{
+		for (int x = 0; x < ScreenWidth; ++x)
+		{
+			prevpSysBuffer[Graphics::ScreenWidth * y + x] = pSysBuffer[Graphics::ScreenWidth * y + x];
+		}
+	}
 }
 
 void Graphics::DrawTri(int x1, int y1, int x2, int y2, int x3, int y3)

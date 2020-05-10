@@ -25,7 +25,14 @@ public:
 	void BackRemove();
 	void Setfar(float near1, float far1);
 	void Rotate(MATRIX4X4 &r);
+	void TemporAASapmle();
 	void copytemp();
+	float getjx() const  {
+		return camera.getjx();
+	}
+	float getjy() const {
+		return camera.getjy();
+	}
 private:
 	uint* index;
 	uint* tindex;
