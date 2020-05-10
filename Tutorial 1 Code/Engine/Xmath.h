@@ -15,12 +15,12 @@ namespace XMath
 			};
 			
 		};
-		Vector_Typ(float x1 ,float y1,float z1, float w = 1.f)
+		Vector_Typ(float x1 ,float y1,float z1, float w1 = 1.f)
 		{
 			x = x1;
 			y = y1;
 			z = z1;
-			w = 1;
+			w =w1;
 
 		}
 		Vector_Typ() {}
@@ -64,7 +64,26 @@ namespace XMath
 
 		};
 
-
+		MATRIX4X4_TYP&	operator =(const MATRIX4X4_TYP& Ma)
+		{
+			this->M[0][0] =Ma.M[0][0];
+			this->M[0][1] = Ma.M[0][1];
+			this->M[0][2] = Ma.M[0][2];
+			this->M[0][3] = Ma.M[0][3];
+			this->M[1][0] = Ma.M[1][0];
+			this->M[1][1] = Ma.M[1][1];
+			this->M[1][2] = Ma.M[1][2];
+			this->M[1][3] = Ma.M[1][3];
+			this->M[2][0] = Ma.M[2][0];
+			this->M[2][1] = Ma.M[2][1];
+			this->M[2][2] = Ma.M[2][2];
+			this->M[2][3] = Ma.M[2][3];
+			this->M[3][0] = Ma.M[3][0];
+			this->M[3][1] = Ma.M[3][1];
+			this->M[3][2] = Ma.M[3][2];
+			this->M[3][3] = Ma.M[3][3];
+			return *this;
+		}
 	}MATRIX4X4,*MATRIX4X4_PTR;
 
 
@@ -113,5 +132,11 @@ namespace XMath
 	float dlength(float dmax, float dmin, float d);
 
 	float getlength(Vector4d &v1, Vector4d& v2);
+
+
+	void InversePos(const MATRIX4X4& M1, MATRIX4X4& M2);
+	void Transposed(const MATRIX4X4& M1, MATRIX4X4& M2);
+	void inversepro(const MATRIX4X4& M1, MATRIX4X4& M2);
+	void inversemcar(const MATRIX4X4& M1, MATRIX4X4& M2);
 }
 

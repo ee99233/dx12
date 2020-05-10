@@ -169,8 +169,12 @@ void DrawX::DrawTri( Graphics& gfx)
 			Vector2d uv1 = utex[tindex[i]];
 			Vector2d uv2 = utex[tindex[i + 1]];
 			Vector2d uv3 = utex[tindex[i + 2]];
+<<<<<<< HEAD
 			//gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z, uv1.u,uv1.v,uv2.u,uv2.v,uv3.u,uv3.v,gfx.img);
 			gfx.Draw_FillTri(round(v1.x), round(v1.y), round(v2.x), round(v2.y), round(v3.x), round(v3.y));
+=======
+			gfx.Draw_FillTri(v1.x, v1.y,v2.x, v2.y, v3.x, v3.y);
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 		}
 		++b;
 	}

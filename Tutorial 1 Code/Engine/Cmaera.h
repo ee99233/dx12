@@ -3,6 +3,22 @@
 
 using namespace XMath;
 
+
+
+typedef struct FMATRIX {
+	MATRIX4X4 mcam; //uvn
+	MATRIX4X4 mper; //透视变换矩阵
+	MATRIX4X4 mscr; //屏幕变换矩阵
+	MATRIX4X4 trans;
+	MATRIX4X4 uvn;
+
+	MATRIX4X4 inversemcam; //uvn
+	MATRIX4X4 inversemper; //透视变换矩阵
+	MATRIX4X4 inversemscr; //屏幕变换矩阵
+	MATRIX4X4 inversetrans;
+	MATRIX4X4 inverseuvn;
+
+}FMATRIX;
 class Cmaera
 {
 public:
@@ -37,6 +53,7 @@ public:
 	 MATRIX4X4 getcam() const ;
 	 MATRIX4X4 getmscr() const;
 	 MATRIX4X4 getmper() const;
+	 FMATRIX ViewMATRIX;
 private:
 	Vector4d pos;
 	Vector4d u;
@@ -56,11 +73,16 @@ private:
 	float viewport_center_x;//视口中心x
 	float viewport_center_y;//视口中心y
 	float aspect_radio;
+<<<<<<< HEAD
 	MATRIX4X4 mcam; //uvn
 	MATRIX4X4 mper; //透视变换矩阵
 	MATRIX4X4 mscr; //屏幕变换矩阵
 	int hutn = 0;
 	float JitterX;
 	float JitterY;
+=======
+	
+	FMATRIX PrevViewMATRIX;
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 };
 

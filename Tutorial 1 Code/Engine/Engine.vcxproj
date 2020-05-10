@@ -162,6 +162,7 @@
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="poly.h" />
+    <ClInclude Include="PostProcess.h" />
     <ClInclude Include="Rasterization.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Xmath.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="poly.cpp" />
+    <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="Rasterization.cpp" />
     <ClCompile Include="Xmath.cpp" />
   </ItemGroup>

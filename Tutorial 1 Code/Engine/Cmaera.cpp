@@ -34,6 +34,8 @@ void Cmaera::initmcam()
 		-pos.x, -pos.y, -pos.z, 1
 	);
 
+	ViewMATRIX.trans = mpos;
+	InversePos(mpos, ViewMATRIX.inversetrans);
 	float phi = dir.x;
 	float theta = dir.z;
 
@@ -62,8 +64,9 @@ void Cmaera::initmcam()
 		u.z, v.z, n.z, 0,
 		0, 0, 0, 1
 	);
-
-	Mat_Mul_4X4(&mpos,&muvn, &mcam);
+	ViewMATRIX.uvn = muvn;
+	Transposed(muvn, ViewMATRIX.inverseuvn);
+	Mat_Mul_4X4(&mpos,&muvn, &ViewMATRIX.mcam);
 
 	//Mat_Init_4X4(&mcam, u.x, v.x, n.x, 0,
 	//	u.y, v.y, n.y, 0,
@@ -76,12 +79,18 @@ void Cmaera::initmcam()
 void Cmaera::initmper()
 {
 	float d = viewplane_width / Tan((fov / 2.f));
-	Mat_Init_4X4(&mper, d/aspect_radio, 0, 0, 0,
+	
+	Mat_Init_4X4(&ViewMATRIX.mper, d/aspect_radio, 0, 0, 0,
 		0, d, 0, 0,
 		0, 0, farview/(farview-nearview), 1,
 		0, 0, -(nearview*farview)/(farview - nearview), 0);
 
+<<<<<<< HEAD
 	
+=======
+	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
+
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 	int i = 0;
 }
 
@@ -91,12 +100,13 @@ void Cmaera::initmscr()
 	float a = viewport_width / 2.f - 0.5f;
 	float b = viewport_heght / 2.f - 0.5f;
 
-	Mat_Init_4X4(&mscr, a, 0, 0, 0,
+	Mat_Init_4X4(&ViewMATRIX.mscr, a, 0, 0, 0,
 		0, -b, 0, 0,
 		0, 0, 1, 0,
 		a, b, 0, 1
 	);
-	int i = 0;
+
+	inversemcar(ViewMATRIX.mscr, ViewMATRIX.inversemscr);
 
 }
 
@@ -153,17 +163,17 @@ void Cmaera::TemporalAASample()
 
 MATRIX4X4 Cmaera::getcam() const
 {
-	return mcam;
+	return ViewMATRIX.mcam;
 }
 
 MATRIX4X4 Cmaera::getmscr() const
 {
-	return mscr;
+	return ViewMATRIX.mscr;
 }
 
 MATRIX4X4 Cmaera::getmper() const
 {
-	return mper;
+	return ViewMATRIX.mper;
 }
 
 

@@ -20,7 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
-
+#include "PostProcess.h"
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
@@ -126,7 +126,11 @@ void Game::initDrawX()
 	dx.setindex(index, 36);
 	dx.setvertx(v, 8);
 	
+<<<<<<< HEAD
 	Vector4d v1(0, 0,8);
+=======
+	Vector4d v1(0, 0,1);
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 	Vector4d dir(0, 0, 0);
 	dx.Setfar(10.f, 100.f);
 	dx.setCameraTarget(v1, dir);
@@ -137,8 +141,40 @@ void Game::initDrawX()
 	dx.settindex(tindex, 36);
 	
 	gfx.Load2D();
+	PostProcess::GetApplcation()->SetDepth(0, 0,5.0f);
+	float Post = PostProcess::GetApplcation()->GetDepth(0, 0);
 
-	
+	Vector4d v2(1.0, 1.0, 40.0f);
+
+	V4d_Mul_4X4(v2, dx.camera.getcam(), v2);
+
+	V4d_Mul_4X4(v2, dx.camera.getmper(), v2);
+	v2.x = v2.x / v2.w;
+	v2.y = v2.y / v2.w;
+	v2.z = v2.z/v2.w;
+	v2.w = v2.w / v2.w;
+	V4d_Mul_4X4(v2, dx.camera.getmscr(), v2);
+
+	Vector4d v3(v2.x, v2.y,v2.z, 1.f);
+	/*v3.x = (v2.x / 1280.f) * 2.0f - 1.0f;
+	v3.y = -((v2.y / 720.f) * 2.0f - 1.0f);
+	v3.z = v2.z;
+	v3.w = 1;*/
+	V4d_Mul_4X4(v3, dx.camera.ViewMATRIX.inversemscr, v3);
+	V4d_Mul_4X4(v3, dx.camera.ViewMATRIX.inversemper, v3);
+	V4d_Mul_4X4(v3, dx.camera.ViewMATRIX.inverseuvn, v3);
+	V4d_Mul_4X4(v3, dx.camera.ViewMATRIX.inversetrans, v3);
+	v3.x = v3.x / v3.w;
+	v3.y = v3.y / v3.w;
+	v3.z = v3.z / v3.w;
+	v3.w = v3.w / v3.w;
+
+
+
+
+
+	int i = 0;
+
 
 }
 
@@ -153,7 +189,11 @@ void Game::ComposeFrame()
 
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
+<<<<<<< HEAD
 	static float x = 10.f;
+=======
+	static float x = 20.f;
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 	static float y =0.f;
 	static float z = 0.f;
 
@@ -212,10 +252,17 @@ void Game::ComposeFrame()
 	}
 
 
+<<<<<<< HEAD
 	//gfx.Draw_FillTri(0.f, 0.f,0,200,200, 240,0,0,0.f,1.f,1.0f,1.0f,gfx.img);
 	//gfx.Draw_FillTri(0, 0, 200,0, 200, 200, 0.f, 0.f, 1.f, 0.f, 1.0f, 1.f, gfx.img);
 	gfx.Draw_FillTri(20.f, 20.f, 10, 200, 200, 220);
 	gfx.Bresenhamline(20.f, 20.f, 10, 100);
+=======
+	////gfx.Draw_FillTri(0.f, 0.f,0,200,200, 240,0,0,0.f,1.f,1.0f,1.0f,gfx.img);
+	////gfx.Draw_FillTri(0, 0, 200,0, 200, 200, 0.f, 0.f, 1.f, 0.f, 1.0f, 1.f, gfx.img);
+	////gfx.Draw_FillTri(0.f, 0.f, 0, 200, 200, 220);
+
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 	//for (int i = 0; i < 256; i++)
 	//{
 	//	for (int j = 0; j < 256; j++)
@@ -224,6 +271,7 @@ void Game::ComposeFrame()
 	//		gfx.PutPixel(j, i, Color(color));
 	//	}
 	//}
+<<<<<<< HEAD
 	/*if (!process)
 	{
 		gfx.CopyColor();
@@ -237,6 +285,8 @@ void Game::ComposeFrame()
 	
 	gfx.postprocessTemporaa(dx.getjx(),dx.getjy());
 	gfx.CopyColor();
+=======
+>>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
 
 	
 	
