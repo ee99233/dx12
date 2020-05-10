@@ -24,7 +24,7 @@
 #include "ChiliException.h"
 #include "Colors.h"
 #include "Light.h"
-
+class DrawX;
 class Graphics
 {
 public:
@@ -56,7 +56,7 @@ public:
 	{
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
-	void postprocessTemporaa(float jx,float jy);
+	void postprocessTemporaa(float jx,float jy,  DrawX& dx);
 	void CopyColor();
 	void Drawline(int x1, int y1, int x2, int y2);
 	void PutPixel( int x,int y,Color c );
@@ -65,19 +65,18 @@ public:
 	void Draw_tr(int x1, int y1, int x2, int y2, int x3, int y3);
 	void Draw_BottomTri(int x1, int y1, int x2, int y2, int x3, int y3);
 	void Draw_TopTri(int x1, int y1, int x2, int y2, int x3, int y3);
-<<<<<<< HEAD
+
 	void Bresenhamline(int x1, int y1, int x2, int y2);
-=======
->>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
+
+	float MsAAWeight(float x1, float y1, float x2, float y2, float x3, float y3,float width, float height);
+
 	void Draw_TopTri(int x1, int y1, int x2, int y2, int x3, int y3,int u0,int v0,int u1,int v1,int u2,int v2);
-	void Draw_FillTri(float x1, float y1, float x2, float y2, float x3, float y3);
+	void Draw_FillTri(float x1, float y1,float z1, float x2, float y2,float z2 ,float x3, float y3,float z3);
 	void Draw_FillTri(int x1, int y1,float z1, int x2, int y2,float z2, int x3, int y3,float z3,float u1,float v1,float u2,float v2,float u3,float v3,UINT* img,Light *light,const class Cmaera  &camera,Vector4d norml);
-<<<<<<< HEAD
-	void Draw_UV(float u1, float v1, float u2, float v2, float u3, float v3, float& u, float& v);
+	bool Draw_UV(float u1, float v1, float u2, float v2, float u3, float v3, float& u, float& v);
 	void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, int x3, int y3, float z3, float u1, float v1, float u2, float v2, float u3, float v3, UINT* img);
-=======
 	bool Draw_UV(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y, float& u, float& v);
->>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
+
 	bool Draw_UV(int x1,int y1,int x2,int y2,int x3,int y3,int x,int y,float& u,float& v);
 	void Load2D();
 	BYTE* GetImageData(ID3D11Device* device, ID3D11DeviceContext* context, ID3D11Texture2D* texture, /*OUT*/ int* nWidth, /*OUT*/ int*  nHeight);

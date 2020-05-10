@@ -85,12 +85,8 @@ void Cmaera::initmper()
 		0, 0, farview/(farview-nearview), 1,
 		0, 0, -(nearview*farview)/(farview - nearview), 0);
 
-<<<<<<< HEAD
-	
-=======
-	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 
->>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
+	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 	int i = 0;
 }
 
@@ -156,9 +152,17 @@ void Cmaera::TemporalAASample()
 	JitterY = Halton(ny,3);
 	float samplex = (JitterX * 2.0f - 1.0f);
 	float sampley = (JitterY * 2.0f - 1.0f);
-	mper.M[2][0] = (JitterX*2.0f - 1.0f) / viewport_width;
-	mper.M[2][1] = (JitterY*2.0f - 1.0f) / viewport_heght;
+	ViewMATRIX.mper.M[2][0] = (JitterX*2.0f - 1.0f) / viewport_width;
+	ViewMATRIX.mper.M[2][1] = (JitterY*2.0f - 1.0f) / viewport_heght;
+	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 	++hutn;
+}
+
+void Cmaera::CopytoPrevMat()
+{
+	CopyMaTR(ViewMATRIX.mcam, PrevViewMATRIX.mcam);
+	CopyMaTR(ViewMATRIX.mper, PrevViewMATRIX.mper);
+	CopyMaTR(ViewMATRIX.mscr, PrevViewMATRIX.mscr);
 }
 
 MATRIX4X4 Cmaera::getcam() const
@@ -175,5 +179,7 @@ MATRIX4X4 Cmaera::getmper() const
 {
 	return ViewMATRIX.mper;
 }
+
+
 
 

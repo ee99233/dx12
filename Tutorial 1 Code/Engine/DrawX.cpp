@@ -51,6 +51,7 @@ void DrawX::setWorldLocation(const Vector4d & world)
 		tempx[i].x += world.x;
 		tempx[i].y += world.y;
 		tempx[i].z += world.z;
+		tempx[i].w = 1;
 	}
 }
 
@@ -169,12 +170,11 @@ void DrawX::DrawTri( Graphics& gfx)
 			Vector2d uv1 = utex[tindex[i]];
 			Vector2d uv2 = utex[tindex[i + 1]];
 			Vector2d uv3 = utex[tindex[i + 2]];
-<<<<<<< HEAD
+
 			//gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z, uv1.u,uv1.v,uv2.u,uv2.v,uv3.u,uv3.v,gfx.img);
-			gfx.Draw_FillTri(round(v1.x), round(v1.y), round(v2.x), round(v2.y), round(v3.x), round(v3.y));
-=======
-			gfx.Draw_FillTri(v1.x, v1.y,v2.x, v2.y, v3.x, v3.y);
->>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
+
+
+			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z);
 		}
 		++b;
 	}
@@ -214,7 +214,7 @@ void DrawX::RelativetoWorld()
 		V4d_Mul_4X4(tempx[i], camera.getmper(), tempx[i]);
 		tempx[i].x = tempx[i].x / tempx[i].w;
 		tempx[i].y = tempx[i].y / tempx[i].w;
-		tempx[i].z =  tempx[i].w;
+		tempx[i].z = tempx[i].z / tempx[i].w;
 		tempx[i].w = tempx[i].w / tempx[i].w;
 		V4d_Mul_4X4(tempx[i], camera.getmscr(), tempx[i]);
 		int j = 0;

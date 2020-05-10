@@ -6,18 +6,19 @@ class PostProcess
 public:
 	PostProcess();
 	~PostProcess();
+	void RestDepth();
 	static PostProcess* GetApplcation();
 	float GetDepth(int width, int height) const 
 	{
 		
-		return (*depth)[1280 * height + width];
+		return depth[1280 * height + width];
 	}
 	void SetDepth(int width,int height, float depthnum)
 	{
 
-		(*depth)[1280 * height + width] = depthnum;
+		depth[1280 * height + width] = depthnum;
 	}
-	std::shared_ptr<float*> depth ;
+	float* depth ;
 private:
 	static PostProcess* postprocess;
 

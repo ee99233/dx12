@@ -138,5 +138,6 @@ namespace XMath
 	void Transposed(const MATRIX4X4& M1, MATRIX4X4& M2);
 	void inversepro(const MATRIX4X4& M1, MATRIX4X4& M2);
 	void inversemcar(const MATRIX4X4& M1, MATRIX4X4& M2);
+	void CopyMaTR(const MATRIX4X4& M1, MATRIX4X4& M2);
 }
 

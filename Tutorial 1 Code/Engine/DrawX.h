@@ -27,17 +27,13 @@ public:
 	void Rotate(MATRIX4X4 &r);
 	void TemporAASapmle();
 	void copytemp();
-<<<<<<< HEAD
 	float getjx() const  {
 		return camera.getjx();
 	}
 	float getjy() const {
 		return camera.getjy();
 	}
-=======
 	Cmaera camera;
->>>>>>> 67c3d04ec122621dc331ca4b21ebd5c2a0c1f71c
-private:
 	uint* index;
 	uint* tindex;
 	int isize;
