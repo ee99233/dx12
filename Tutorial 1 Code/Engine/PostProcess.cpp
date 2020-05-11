@@ -5,13 +5,30 @@
  PostProcess* PostProcess::postprocess = nullptr;
 PostProcess::PostProcess()
 {
-	depth = make_shared<float*>(new float[1280 * 720]);
+	depth = new float[1280 * 720];
 	
 }
 
 
 PostProcess::~PostProcess()
+
 {
+	if (depth != nullptr)
+	{
+		delete[] depth;
+		depth = nullptr;
+	}
+}
+
+void PostProcess::RestDepth()
+{
+	if (depth!=nullptr)
+	{
+		delete[] depth;
+		depth = nullptr;
+	}
+
+	depth = new float[1280 * 720];
 }
 
 PostProcess * PostProcess::GetApplcation()

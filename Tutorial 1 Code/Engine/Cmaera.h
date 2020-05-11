@@ -32,6 +32,8 @@ public:
 	 void SetDir(const float Xangle, const float& Zangle);
 	 void SetScreen(float aspect_radio, float fov,int iewport_width);
 	 void SetReslotion(float screenwidth, float screenheight);
+	 void TemporalAASample();
+	 void CopytoPrevMat();
 	 Point4d getpos() const
 	 {
 		 return pos;
@@ -40,10 +42,20 @@ public:
 	 {
 		 return target;
 	 }
+
+	 float getjx() const
+	 {
+		 return JitterX;
+	 }
+	 float getjy() const
+	 {
+		 return JitterY;
+	 }
 	 MATRIX4X4 getcam() const ;
 	 MATRIX4X4 getmscr() const;
 	 MATRIX4X4 getmper() const;
 	 FMATRIX ViewMATRIX;
+	 FMATRIX PrevViewMATRIX;
 private:
 	Vector4d pos;
 	Vector4d u;
@@ -63,7 +75,11 @@ private:
 	float viewport_center_x;//视口中心x
 	float viewport_center_y;//视口中心y
 	float aspect_radio;
+	int hutn = 0;
+	float JitterX;
+	float JitterY;
+
 	
-	FMATRIX PrevViewMATRIX;
+	
 };
 

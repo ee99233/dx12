@@ -2,6 +2,20 @@
 
 
 
+inline float Halton(int Index, int Base)
+{
+	float Result = 0.0f;
+	float InvBase = 1.0f / Base;
+	float Fraction = InvBase;
+	while (Index > 0)
+	{
+		Result += (Index % Base) * Fraction;
+		Index /= Base;
+		Fraction *= InvBase;
+	}
+	return Result;
+}
+
 Cmaera::Cmaera()
 {
 }
@@ -71,10 +85,11 @@ void Cmaera::initmper()
 		0, 0, farview/(farview-nearview), 1,
 		0, 0, -(nearview*farview)/(farview - nearview), 0);
 
-	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 
+	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 	int i = 0;
 }
+
 
 void Cmaera::initmscr()
 {
@@ -129,6 +144,27 @@ void Cmaera::SetReslotion(float screenwidth, float screenheight)
 	initmscr();
 }
 
+void Cmaera::TemporalAASample()
+{
+	int nw = hutn % 8+1;
+	int ny = hutn % 8 + 1;
+	JitterX = Halton(nw, 2);
+	JitterY = Halton(ny,3);
+	float samplex = (JitterX * 2.0f - 1.0f);
+	float sampley = (JitterY * 2.0f - 1.0f);
+	ViewMATRIX.mper.M[2][0] = (JitterX*2.0f - 1.0f) / viewport_width;
+	ViewMATRIX.mper.M[2][1] = (JitterY*2.0f - 1.0f) / viewport_heght;
+	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
+	++hutn;
+}
+
+void Cmaera::CopytoPrevMat()
+{
+	CopyMaTR(ViewMATRIX.mcam, PrevViewMATRIX.mcam);
+	CopyMaTR(ViewMATRIX.mper, PrevViewMATRIX.mper);
+	CopyMaTR(ViewMATRIX.mscr, PrevViewMATRIX.mscr);
+}
+
 MATRIX4X4 Cmaera::getcam() const
 {
 	return ViewMATRIX.mcam;
@@ -143,5 +179,7 @@ MATRIX4X4 Cmaera::getmper() const
 {
 	return ViewMATRIX.mper;
 }
+
+
 
 
