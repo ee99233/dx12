@@ -782,6 +782,7 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 	{
 		swap(x1, y1, x2, y2,z1,z2);
 	}
+	
 	if (y1 > y3)
 	{
 		swap(x1, y1, x3, y3,z1,z2);
@@ -790,34 +791,34 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 	{
 		swap(x2, y2, x3, y3,z1,z2);
 	}
+	if (y1 == y2)
+	{
+		if (x1 > x2)
+		{
+			swap(x1, y1, x2, y2, z1, z2);
+		}
+	}
+	if (y2 == y3)
+	{
+		if (x2 > x3)
+		{
+			swap(x2, y2, x3, y3, z2, z3);
+		}
+	}
+		
 
-	
 
-	int vx1 = x2 - x1;
-	int vy1 = y2 - y1;
-	int vx2 = x3 - x1;
-	int vy2 = y3 - y1;
-	int vx3 = x2 - x3;
-	int vy3 = y2 - y3;
-
-	float k1 = (y2 - y1)*x3 + (x1 - x2)*y3 + x2 * y1 - x1 * y2;
-	float k2 = (y3 - y1)*x2 + (x1 - x3)*y2 + x3 * y1 - x1 * y3;
-	float k3 = (y3 - y2)*x1 + (x3 - x2)*y1 + x3 * y2 - x2 * y2;
-
-	k1 = 1 / k1;
-	k2 = 1 / k2;
-	k3 = 1 / k3;
-	int minx =Min(ceil(x1), Min(ceil(x2), ceil(x3)));
-	int maxx = Max(ceil(x1), Max(ceil(x2), ceil(x3)));
-	int miny = Min(ceil(y1), Min(ceil(y2), ceil(y3)));
-	int maxy = Max(ceil(y1), Max(ceil(y2), ceil(y3)));
+	int minx =Min(round(x1), Min(round(x2), round(x3)));
+	int maxx = Max(round(x1), Max(round(x2), round(x3)));
+	int miny = Min(round(y1), Min(round(y2), round(y3)));
+	int maxy = Max(round(y1), Max(round(y2), round(y3)));
 
 	
 
 
 	for (int h = miny; h <= maxy; h++)
 	{
-		for (int w = minx+1; w <= maxx; w++)
+		for (int w = minx; w <= maxx; w++)
 		{
 			int vx0 = w - x1;
 			int vy0 = h - y1;
@@ -839,13 +840,20 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 			{
 
 				
-				float colo = 255.f;
-				float depth=  z1 + (z2 -  z1)* u + (z3 - z1) * v;
+				//int colo =Colors::Blue.dword* (1 - u - v)+ Colors::Red.dword*v+ Colors::Blue.dword*u;
+				float y = y1 * (1-u-v) + y2 * v + y3 *u;
+				float x = x1 * (1-u-v)+ x2 * v + x3 *u;
+				float depth=  z1* (1 - u - v) + z2* v + z3 * u;
+				
 				if (depth > 0.0f&&depth < 1.0f)
 				{
-					PostProcess::GetApplcation()->SetDepth(w, h, depth);
+					if (depth < PostProcess::GetApplcation()->GetDepth(w,h)|| PostProcess::GetApplcation()->GetDepth(w, h)<0.0f)
+					{
 
-					PutPixel(w, h, Color(colo));
+						PostProcess::GetApplcation()->SetDepth(w, h, depth);
+
+						PutPixel(w, h, Colors::Blue);
+					}
 				}
 
 				/*{
@@ -853,11 +861,8 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 					PutPixel(w, h, Color(colo*weight));
 				}*/
 			}
-
-		
-
-
 		}
+		int n = 0;
 	}
 
 }
@@ -1334,18 +1339,20 @@ bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float 
 {
 
 
-/*	Vector2d v1(x2 - x1, y2 - y1);
+	Vector2d v1(x2 - x1, y2 - y1);
 	Vector2d v2(x3 - x1, y3 - y1);
-	Vector2d v3(x3 - x2, y3 - y2);
+	Vector2d v3(x3 - x2, y3 - y2);	
 	Vector2d v0(x - x1, y - y1);
 	float s = CrossProductF(v1.u,v1.v,v2.u,v2.v);
 	float s1= CrossProductF(v1.u, v1.v,v0.u, v0.v);
 	float s2 = CrossProductF(v0.u, v0.v,v2.u, v2.v);
 	float s3 = CrossProductF(v1.u, v1.v, v2.u, v2.v);
 	u = s1 / s;
-	v = s2 / s*/;
+	v = s2 / s;
 
-	Vector2d v0(x2 - x1, y2 - y1);
+	return u > 0 && v > 0 && u + v < 1;
+
+	/*Vector2d v0(x2 - x1, y2 - y1);
 	Vector2d v1(x3 - x1, y3 - y1);
 	Vector2d v3(x3 - x2, y3 - y2);
 	Vector2d v2(x - x1, y - y1);
@@ -1368,14 +1375,14 @@ bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float 
 
 		v = (dot00*dot12 - dot01 * dot02) / (dot11*dot00 - dot01 * dot01);
 	}
-	return u >= 0 && v >= 0 && u + v <= 1;
+	return u > 0 && v > 0 && u + v < 1;*/
 }
 
 
 
 bool Graphics::Draw_UV(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y, float& u, float& v)
 {
-	Vector2d v1(x2 - x1, y2 - y1);
+	/*Vector2d v1(x2 - x1, y2 - y1);
 	Vector2d v2(x3 - x1, y3 - y1);
 	Vector2d v3(x3 - x2, y3 - y2);
 	Vector2d v0(x - x1, y - y1);
@@ -1384,36 +1391,36 @@ bool Graphics::Draw_UV(int x1, int y1, int x2, int y2, int x3, int y3, int x, in
 	float s2 = CrossProductF(v0.u, v0.v,v2.u, v2.v);
 	float s3 = CrossProductF(v1.u, v1.v, v2.u, v2.v);
 	u = s1 / s;
-	v = s2 / s;
+	v = s2 / s;*/
 
-	//Vector2d v0(x2 - x1, y2 - y1);
-	//Vector2d v1(x3 - x1, y3 - y1);
-	//Vector2d v3(x3 - x2, y3 - y2);
-	//Vector2d v2(x - x1, y - y1);
+	Vector2d v0(x2 - x1, y2 - y1);
+	Vector2d v1(x3 - x1, y3 - y1);
+	Vector2d v3(x3 - x2, y3 - y2);
+	Vector2d v2(x - x1, y - y1);
 
-	//float dot00 = DotProduct(&v0, &v0);
-	//float dot01 = DotProduct(&v0,&v1);
-	//float dot02 = DotProduct(&v0, &v2);
-	//float dot11 = DotProduct(&v1, &v1);
-	//float dot12 = DotProduct(&v1, &v2);
-	//
-	//float ux = dot00 * dot11 - dot01 * dot01;
-	//if (ux == 0)
-	//{
-	//	u = 0;
-	//	v = 0;
-	//}
-	//else
-	//{
-	//	u = (dot11*dot02 - dot01 * dot12) / (dot11*dot00 - dot01 * dot01);
+	float dot00 = DotProduct(&v0, &v0);
+	float dot01 = DotProduct(&v0,&v1);
+	float dot02 = DotProduct(&v0, &v2);
+	float dot11 = DotProduct(&v1, &v1);
+	float dot12 = DotProduct(&v1, &v2);
+	
+	float ux = dot00 * dot11 - dot01 * dot01;
+	if (ux == 0)
+	{
+		u = 0;
+		v = 0;
+	}
+	else
+	{
+		u = (dot11*dot02 - dot01 * dot12) / (dot11*dot00 - dot01 * dot01);
 
-	//	v = (dot00*dot12 - dot01 * dot02) / (dot11*dot00 - dot01 * dot01);
-	//}
+		v = (dot00*dot12 - dot01 * dot02) / (dot11*dot00 - dot01 * dot01);
+	}
 	
 	
 	
 
-	return u >= 0 && v >= 0 && u + v <= 1;
+	return u > 0 && v > 0 && u + v < 1;
 
 
 
@@ -1506,11 +1513,20 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 			if (depth > 0.0f&&depth < 1.0f)
 			{
 
-				Vector4d v1(x, y, depth,1.0f);
+				/*float u = (x / 1280.f)*2.0f - 1.0f;
+				float v = ((y / 720.f)*2.0f - 1.0f);
+				Vector4d v1(u, v, depth,1.0f);*/
+
+				Vector4d v1(x, y, depth, 1.0f);
 				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
 				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
 				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
 				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);
+				/*	V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
+				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
+				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
+				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);*/
+
 	
 				v1.x = v1.x / v1.w;
 				v1.y = v1.y / v1.w;
@@ -1525,11 +1541,15 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 				v1.w = v1.w / v1.w;
 				V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mscr, v1);
 				
-				int prevx = v1.x;
-				int prevy = v1.y;
-				//float color = 0.05* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword*0.95;
-
-				pSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword = 255555;
+				int prevx = v1.x+0.5f;
+				int prevy = v1.y+0.5f;
+				float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword*0.95f;
+				
+				pSysBuffer[Graphics::ScreenWidth * y + x+250].dword = prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword;
+				//pSysBuffer[Graphics::ScreenWidth * y + x + 250].dword = depth * Colors::White.dword;
+				pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
+				
+				
 				
 			}
 		

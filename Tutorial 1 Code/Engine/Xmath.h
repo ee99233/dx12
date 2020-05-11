@@ -125,6 +125,7 @@ namespace XMath
 	 int Min(const int&a, const int&b);
 
 	float CrossProductF(int x1, int x2, int y1, int y2);
+	float CrossProductF(float x1, float x2, float y1, float y2);
 
 	bool insideangle(int vx1, int vy1, int vx2, int vy2, int vx3, int vy3, int vx0, int vy0);
 

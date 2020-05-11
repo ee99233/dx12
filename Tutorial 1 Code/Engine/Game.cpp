@@ -165,7 +165,7 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 45.f;
+	static float x = 20.f;
 	static float y =0.f;
 	static float z = 0.f;
 
@@ -237,7 +237,7 @@ void Game::ComposeFrame()
 		gfx.CopyColor();
 	}
 	//gfx.Draw_FillTri(150.f, 100.f, 0.5f, 100.f, 100.f, 0.4f, 200.f, 200.f, 0.3f);
-	//gfx.Draw_FillTri(100.f, 100.f, 0.5f, 120.f, 200.f, 0.4f, 200.f, 200.f, 0.3f);
+	//.Draw_FillTri(100.f, 100.f, 0.5f, 120.f, 200.f, 0.4f, 200.f, 200.f, 0.3f);
 	
 	
 	dx.camera.CopytoPrevMat();
