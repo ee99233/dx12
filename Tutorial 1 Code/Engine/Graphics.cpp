@@ -785,11 +785,11 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 	
 	if (y1 > y3)
 	{
-		swap(x1, y1, x3, y3,z1,z2);
+		swap(x1, y1, x3, y3,z1,z3);
 	}
 	if (y2 > y3)
 	{
-		swap(x2, y2, x3, y3,z1,z2);
+		swap(x2, y2, x3, y3,z2,z3);
 	}
 	if (y1 == y2)
 	{
@@ -841,18 +841,23 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 
 				
 				//int colo =Colors::Blue.dword* (1 - u - v)+ Colors::Red.dword*v+ Colors::Blue.dword*u;
-				float y = y1 * (1-u-v) + y2 * v + y3 *u;
-				float x = x1 * (1-u-v)+ x2 * v + x3 *u;
-				float depth=  z1* (1 - u - v) + z2* v + z3 * u;
+				float y = y1 * (1 - u - v) + y2 * v + y3 *u;
+				float x = x1 * (1 - u - v) + x2 *v  + x3 * u;
+				float depth= z1 * (1 - u - v) + z2 * u + z3 * v;
+				//float depth= z* ((1.0f/z1)*x1* (1-u-v) + (1.0f/z2)*x2* v + (1.0f/z3)*x3 * u);
 				
+				//Color color = Colors::Green.dword*(1 - u - v) + Colors::Blue.dword*v + Colors::Red.dword*u;
 				if (depth > 0.0f&&depth < 1.0f)
 				{
+					PostProcess::GetApplcation()->SetDepth(w, h, depth);
+
+					PutPixel(w, h, Colors::White);
 					if (depth < PostProcess::GetApplcation()->GetDepth(w,h)|| PostProcess::GetApplcation()->GetDepth(w, h)<0.0f)
 					{
 
-						PostProcess::GetApplcation()->SetDepth(w, h, depth);
+						/*PostProcess::GetApplcation()->SetDepth(w, h, depth);
 
-						PutPixel(w, h, Colors::Blue);
+						PutPixel(w, h, Colors::White);*/
 					}
 				}
 
@@ -1341,16 +1346,18 @@ bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float 
 
 	Vector2d v1(x2 - x1, y2 - y1);
 	Vector2d v2(x3 - x1, y3 - y1);
-	Vector2d v3(x3 - x2, y3 - y2);	
-	Vector2d v0(x - x1, y - y1);
+	Vector2d vx0(x - x1, y - y1);
+	Vector2d vx1(x - x2, y - y2);
+	Vector2d vx2(x - x3, y - y3);
 	float s = CrossProductF(v1.u,v1.v,v2.u,v2.v);
-	float s1= CrossProductF(v1.u, v1.v,v0.u, v0.v);
-	float s2 = CrossProductF(v0.u, v0.v,v2.u, v2.v);
-	float s3 = CrossProductF(v1.u, v1.v, v2.u, v2.v);
+	float s1= CrossProductF(vx0.u, vx0.v,vx1.u, vx1.v);
+	float s2 = CrossProductF(vx2.u, vx2.v, vx0.u, vx0.v);
+	float s3 = CrossProductF(vx1.u, vx1.v, vx2.u, vx2.v);
 	u = s1 / s;
 	v = s2 / s;
+	float c = s3 / s;
 
-	return u > 0 && v > 0 && u + v < 1;
+	return u >= 0 && v >= 0 && u + v <= 1;
 
 	/*Vector2d v0(x2 - x1, y2 - y1);
 	Vector2d v1(x3 - x1, y3 - y1);
@@ -1541,12 +1548,12 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 				v1.w = v1.w / v1.w;
 				V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mscr, v1);
 				
-				int prevx = v1.x+0.5f;
-				int prevy = v1.y+0.5f;
+				int prevx = v1.x;
+				int prevy = v1.y;
 				float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword*0.95f;
 				
-				pSysBuffer[Graphics::ScreenWidth * y + x+250].dword = prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword;
-				//pSysBuffer[Graphics::ScreenWidth * y + x + 250].dword = depth * Colors::White.dword;
+				//pSysBuffer[Graphics::ScreenWidth * y + x+250].dword = prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword;
+				pSysBuffer[Graphics::ScreenWidth * y + x + 250].dword = depth * Colors::White.dword;
 				pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
 				
 				

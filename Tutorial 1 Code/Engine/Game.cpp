@@ -165,7 +165,7 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 20.f;
+	static float x = 0.f;
 	static float y =0.f;
 	static float z = 0.f;
 
@@ -208,7 +208,7 @@ void Game::ComposeFrame()
 	dx.Rotate(mrz);
 	dx.Rotate(mry);
 	
-	dx.setWorldLocation(Vector4d(0.f, 0.f, 20.f));
+	dx.setWorldLocation(Vector4d(0.f, 0.f, 18.f));
 	dx.TemporAASapmle();
 	dx.BackRemove();
 	dx.RelativetoWorld();
