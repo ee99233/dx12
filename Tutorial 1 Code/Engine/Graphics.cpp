@@ -721,8 +721,8 @@ void Graphics::Bresenhamline(int x1, int y1, int x2, int y2)
 
 float Graphics::MsAAWeight(float width, float height,float x1, float y1, float x2, float y2, float x3, float y3)
 {
-	static const float SamplesX[] = { 0.0f / 2.0f,  1.0 / 2.0f,  0.0 / 2.0f, -1.0 / 2.0f };
-	 static const float SamplesY[] = { -1.0f / 2.0f,  0.0 / 2.0f,  1.0 / 2.0f,  0.0 / 2.0f };
+	static const float SamplesX[] = { -0.5,  0.5,  -0.5, 0.5 };
+	 static const float SamplesY[] = { -0.5,  0.5,  1.0 / 2.0f, -0.5 };
 
 	float w1 = width + SamplesX[0];
 	float h1 = height + SamplesY[0];
@@ -778,7 +778,7 @@ float Graphics::MsAAWeight(float width, float height,float x1, float y1, float x
 
 void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 {
-	if (y1 > y2)
+	/*if (y1 > y2)
 	{
 		swap(x1, y1, x2, y2,z1,z2);
 	}
@@ -797,21 +797,21 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 		{
 			swap(x1, y1, x2, y2, z1, z2);
 		}
-	}
+	}+
 	if (y2 == y3)
 	{
 		if (x2 > x3)
 		{
 			swap(x2, y2, x3, y3, z2, z3);
 		}
-	}
+	}*/
 		
 
 
-	int minx =Min(round(x1), Min(round(x2), round(x3)));
-	int maxx = Max(round(x1), Max(round(x2), round(x3)));
-	int miny = Min(round(y1), Min(round(y2), round(y3)));
-	int maxy = Max(round(y1), Max(round(y2), round(y3)));
+	int minx =Min(ceil(x1), Min(ceil(x2), ceil(x3)));
+	int maxx = Max(ceil(x1), Max(ceil(x2), ceil(x3)));
+	int miny = Min(ceil(y1), Min(ceil(y2), ceil(y3)));
+	int maxy = Max(ceil(y1), Max(ceil(y2), ceil(y3)));
 
 	
 
@@ -840,30 +840,36 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 			{
 
 				
-				//int colo =Colors::Blue.dword* (1 - u - v)+ Colors::Red.dword*v+ Colors::Blue.dword*u;
-				float y = y1 * (1 - u - v) + y2 * v + y3 *u;
-				float x = x1 * (1 - u - v) + x2 *v  + x3 * u;
-				float depth= z1 * (1 - u - v) + z2 * u + z3 * v;
+				int colo =Colors::Blue.dword* (1 - u - v)+ Colors::Red.dword*v+ Colors::Blue.dword*u;
+				float y = y1 *v  + y2 * (1 - u - v) + y3 *u;
+				float x = x1 * v+(1 - u - v)*y2 + x2 * v + x3 * u;
+				float depth= z1 * v + z2 * (1 - u - v) +z3 * u;
 				//float depth= z* ((1.0f/z1)*x1* (1-u-v) + (1.0f/z2)*x2* v + (1.0f/z3)*x3 * u);
 				
 				//Color color = Colors::Green.dword*(1 - u - v) + Colors::Blue.dword*v + Colors::Red.dword*u;
 				if (depth > 0.0f&&depth < 1.0f)
 				{
-					PostProcess::GetApplcation()->SetDepth(w, h, depth);
-
-					PutPixel(w, h, Colors::White);
+					
+				
 					if (depth < PostProcess::GetApplcation()->GetDepth(w,h)|| PostProcess::GetApplcation()->GetDepth(w, h)<0.0f)
 					{
+						unsigned int red =  0* v + 255 * (1 - u - v) + 0 * u;
+						unsigned int green = 0 *  v + 0 * (1 - u - v) + 255 * u;
+						unsigned int blue = 255 * v + 0 * (1 - u - v) + 0 * u;
 
-						/*PostProcess::GetApplcation()->SetDepth(w, h, depth);
+						PostProcess::GetApplcation()->SetDepth(w, h, depth);
 
-						PutPixel(w, h, Colors::White);*/
+						PutPixel(w, h, Color(red, green,blue));
+						
 					}
 				}
 
 				/*{
 					float weight = MsAAWeight(width, height, x1, y1, x2, y2, x3, y3);
-					PutPixel(w, h, Color(colo*weight));
+					unsigned int red = 100.f * weight +0*0.2;
+					unsigned int green = 255.f * weight + 0 * 0.2;
+					unsigned int blue = 100.f * weight + 0 * 0.2;
+					PutPixel(w, h, Color(red, green, blue));
 				}*/
 			}
 		}
@@ -871,6 +877,12 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 	}
 
 }
+
+
+
+
+
+
 
 
 
@@ -1344,18 +1356,24 @@ bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float 
 {
 
 
-	Vector2d v1(x2 - x1, y2 - y1);
-	Vector2d v2(x3 - x1, y3 - y1);
-	Vector2d vx0(x - x1, y - y1);
-	Vector2d vx1(x - x2, y - y2);
-	Vector2d vx2(x - x3, y - y3);
-	float s = CrossProductF(v1.u,v1.v,v2.u,v2.v);
-	float s1= CrossProductF(vx0.u, vx0.v,vx1.u, vx1.v);
-	float s2 = CrossProductF(vx2.u, vx2.v, vx0.u, vx0.v);
+	Vector2d v1( x2-x1, y2 - y1);
+	Vector2d v2(x3 - x1, y3-y1);
+	Vector2d vx0( x1-x, y1-y);
+	Vector2d vx1( x2-x,y2-y );
+	Vector2d vx2( x3-x,  y3-y);
+
+	Vector2d xv2(x2 - x, y2 - y);
+	Vector2d vx3(x-x3, y - y3);
+	float s = CrossProductF(v2.u,v2.v,v1.u,v1.v);
+	float s1= CrossProductF(vx1.u, vx1.v,vx0.u, vx0.v);
+	float s2 = CrossProductF(vx2.u, vx2.v, vx1.u, vx1.v);
 	float s3 = CrossProductF(vx1.u, vx1.v, vx2.u, vx2.v);
 	u = s1 / s;
 	v = s2 / s;
-	float c = s3 / s;
+	if (y > 250)
+	{
+		int i = 0;
+	}
 
 	return u >= 0 && v >= 0 && u + v <= 1;
 
@@ -1515,9 +1533,9 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 	{
 		for (int x = 0; x < ScreenWidth; ++x)
 		{
-
 			float depth = PostProcess::GetApplcation()->GetDepth(x, y);
-			if (depth > 0.0f&&depth < 1.0f)
+
+			if (depth > 0.0f&&depth < 10.0f)
 			{
 
 				/*float u = (x / 1280.f)*2.0f - 1.0f;
@@ -1550,11 +1568,18 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 				
 				int prevx = v1.x;
 				int prevy = v1.y;
-				float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword*0.95f;
+				float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * y + x].dword*0.95f;
+				unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f+ prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+				unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
+				unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
 				
-				//pSysBuffer[Graphics::ScreenWidth * y + x+250].dword = prevpSysBuffer[Graphics::ScreenWidth * prevy + prevx].dword;
-				pSysBuffer[Graphics::ScreenWidth * y + x + 250].dword = depth * Colors::White.dword;
-				pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
+				//pSysBuffer[Graphics::ScreenWidth * y + x] = Colors::Red;
+				
+				
+				pSysBuffer[Graphics::ScreenWidth * y + x].dword = prevpSysBuffer[Graphics::ScreenWidth * y + x].dword;
+
+				//pSysBuffer[Graphics::ScreenWidth * y + x+250] = Color(255*depth, 255*depth, 255*depth);
+				//pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
 				
 				
 				

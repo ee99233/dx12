@@ -51,6 +51,8 @@ public:
 	 {
 		 return JitterY;
 	 }
+	 float GetPrevjx() const;
+	 float GetPrevjy() const;
 	 MATRIX4X4 getcam() const ;
 	 MATRIX4X4 getmscr() const;
 	 MATRIX4X4 getmper() const;

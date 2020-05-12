@@ -165,8 +165,8 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 0.f;
-	static float y =0.f;
+	static float x = 45.f;
+	static float y =20.f;
 	static float z = 0.f;
 
 	Mat_Init_4X4(&mrz, Cos(z), -Sin(z), 0, 0,
@@ -222,9 +222,12 @@ void Game::ComposeFrame()
 		s += 0.f;
 		wnd.kbd.FlushKey();
 	}
-
-
-
+	/*dx.TemporAASapmle();
+	
+	float djx = dx.getjx();
+	float djy= dx.getjy();
+	gfx.Draw_FillTri(150.f, 100.f, 0.5f, 100.f, 100.f, 0.4f, 200.f, 200.f, 0.3f);
+	gfx.Draw_FillTri(100.f, 100.f, 0.5f, 120.f, 200.f, 0.4f, 200., 200.f, 0.3f);*/
 
 	if (!process)
 	{
@@ -237,7 +240,7 @@ void Game::ComposeFrame()
 		gfx.CopyColor();
 	}
 	//gfx.Draw_FillTri(150.f, 100.f, 0.5f, 100.f, 100.f, 0.4f, 200.f, 200.f, 0.3f);
-	//.Draw_FillTri(100.f, 100.f, 0.5f, 120.f, 200.f, 0.4f, 200.f, 200.f, 0.3f);
+	//Draw_FillTri(100.f, 100.f, 0.5f, 120.f, 200.f, 0.4f, 200.f, 200.f, 0.3f);
 	
 	
 	dx.camera.CopytoPrevMat();
