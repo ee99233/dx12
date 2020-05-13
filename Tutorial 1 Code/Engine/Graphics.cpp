@@ -808,9 +808,9 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 		
 
 
-	int minx =Min(ceil(x1), Min(ceil(x2), ceil(x3)));
+	int minx =Min(round(x1), Min(round(x2), round(x3)));
 	int maxx = Max(ceil(x1), Max(ceil(x2), ceil(x3)));
-	int miny = Min(ceil(y1), Min(ceil(y2), ceil(y3)));
+	int miny = Min(round(y1), Min(round(y2), round(y3)));
 	int maxy = Max(ceil(y1), Max(ceil(y2), ceil(y3)));
 
 	
@@ -864,13 +864,13 @@ void Graphics::Draw_FillTri(float x1, float y1, float z1, float x2, float y2, fl
 					}
 				}
 
-				/*{
-					float weight = MsAAWeight(width, height, x1, y1, x2, y2, x3, y3);
-					unsigned int red = 100.f * weight +0*0.2;
-					unsigned int green = 255.f * weight + 0 * 0.2;
-					unsigned int blue = 100.f * weight + 0 * 0.2;
-					PutPixel(w, h, Color(red, green, blue));
-				}*/
+				{
+					/*float weight = MsAAWeight(width, height, x1, y1, x2, y2, x3, y3);
+					unsigned int red = 0 * v + 255 * (1 - u - v) + 0 * u;
+					unsigned int green = 0 * v + 0 * (1 - u - v) + 255 * u;
+					unsigned int blue = 255 * v + 0 * (1 - u - v) + 0 * u;
+					PutPixel(w, h, Color(red*weight, green*weight, blue*weight));*/
+				}
 			}
 		}
 		int n = 0;
@@ -1370,12 +1370,9 @@ bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float 
 	float s3 = CrossProductF(vx1.u, vx1.v, vx2.u, vx2.v);
 	u = s1 / s;
 	v = s2 / s;
-	if (y > 250)
-	{
-		int i = 0;
-	}
 
-	return u >= 0 && v >= 0 && u + v <= 1;
+
+	return u>= 0 && v >= 0 && u + v <= 1;
 
 	/*Vector2d v0(x2 - x1, y2 - y1);
 	Vector2d v1(x3 - x1, y3 - y1);
@@ -1526,70 +1523,84 @@ void Graphics::PutPixel( int x,int y,Color c )
 	pSysBuffer[Graphics::ScreenWidth * y + x] = c;
 }
 
-void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
+void Graphics::postprocessTemporaa(float jx, float jy, DrawX& dx)
 {
-	
+
 	for (int y = 0; y < ScreenHeight; ++y)
 	{
 		for (int x = 0; x < ScreenWidth; ++x)
 		{
 			float depth = PostProcess::GetApplcation()->GetDepth(x, y);
+			unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+			unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
+			unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
+			//pSysBuffer[Graphics::ScreenWidth * y + x] = prevpSysBuffer[Graphics::ScreenWidth * y + x];
+
+			pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
+			//float depth = PostProcess::GetApplcation()->GetDepth(x, y);
 
 			if (depth > 0.0f&&depth < 10.0f)
 			{
 
-				/*float u = (x / 1280.f)*2.0f - 1.0f;
-				float v = ((y / 720.f)*2.0f - 1.0f);
-				Vector4d v1(u, v, depth,1.0f);*/
+				///*float u = (x / 1280.f)*2.0f - 1.0f;
+				//float v = ((y / 720.f)*2.0f - 1.0f);
+				//Vector4d v1(u, v, depth,1.0f);*/
 
-				Vector4d v1(x, y, depth, 1.0f);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);
-				/*	V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
-				V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);*/
+				//Vector4d v1(x, y, depth, 1.0f);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);
+				///*	V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemscr, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversemper, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inversetrans, v1);
+				//V4d_Mul_4X4(v1, dx.camera.ViewMATRIX.inverseuvn, v1);*/
 
-	
-				v1.x = v1.x / v1.w;
-				v1.y = v1.y / v1.w;
-				v1.z = v1.z / v1.w;
-				v1.w = v1.w / v1.w;
 
-				V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mcam, v1);
-				V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mper, v1);
-				v1.x = v1.x / v1.w;
-				v1.y = v1.y / v1.w;
-				v1.z = v1.z / v1.w;
-				v1.w = v1.w / v1.w;
-				V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mscr, v1);
-				
-				int prevx = v1.x;
-				int prevy = v1.y;
-				float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * y + x].dword*0.95f;
-				unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f+ prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+				//v1.x = v1.x / v1.w;
+				//v1.y = v1.y / v1.w;
+				//v1.z = v1.z / v1.w;
+				//v1.w = v1.w / v1.w;
+
+				//V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.uvn, v1);
+				//V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.trans, v1);
+				//V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.inversemper, v1);
+				//v1.x = v1.x / v1.w;
+				//v1.y = v1.y / v1.w;
+				//v1.z = v1.z / v1.w;
+				//v1.w = v1.w / v1.w;
+				//V4d_Mul_4X4(v1, dx.camera.PrevViewMATRIX.mscr, v1);
+
+				//int prevx = v1.x;
+				//int prevy = v1.y;
+				//float color = 0.05f* pSysBuffer[Graphics::ScreenWidth * y + x].dword + prevpSysBuffer[Graphics::ScreenWidth * y + x].dword*0.95f;
+				//unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+				//unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
+				//unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
+
+				//pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
+
+
+				/*	pSysBuffer[Graphics::ScreenWidth * y + x].dword = prevpSysBuffer[Graphics::ScreenWidth * y + x].dword;
+
+					pSysBuffer[Graphics::ScreenWidth * y + x+250] = Color(255*depth, 255*depth, 255*depth);
+					pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
+					*/
+
+
+			}
+			else {
+				/*unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
 				unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
 				unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
-				
-				//pSysBuffer[Graphics::ScreenWidth * y + x] = Colors::Red;
-				
-				
-				pSysBuffer[Graphics::ScreenWidth * y + x].dword = prevpSysBuffer[Graphics::ScreenWidth * y + x].dword;
-
-				//pSysBuffer[Graphics::ScreenWidth * y + x+250] = Color(255*depth, 255*depth, 255*depth);
-				//pSysBuffer[Graphics::ScreenWidth * y + x].dword = color;
-				
-				
-				
+				pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);*/
 			}
-		
+
 		}
 	}
 
 
-	
+
 }
 
 
@@ -1599,13 +1610,14 @@ void Graphics::postprocessTemporaa(float jx, float jy,  DrawX& dx)
 
 void Graphics::CopyColor()
 {
-	for (int y = 0; y < ScreenHeight; ++y)
+	for (int y = 0; y < 720; ++y)
 	{
-		for (int x = 0; x < ScreenWidth; ++x)
+		for (int x = 0; x < 1280; ++x)
 		{
 			prevpSysBuffer[Graphics::ScreenWidth * y + x] = pSysBuffer[Graphics::ScreenWidth * y + x];
 		}
 	}
+	
 }
 
 void Graphics::DrawTri(int x1, int y1, int x2, int y2, int x3, int y3)

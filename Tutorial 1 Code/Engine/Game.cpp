@@ -130,7 +130,7 @@ void Game::initDrawX()
 
 	Vector4d v1(0.f, 0.f,1.0f);
 	Vector4d dir(0, 0, 0);
-	dx.Setfar(10.f, 100.f);
+	dx.Setfar(1.f, 100.f);
 	dx.setCameraTarget(v1, dir);
 	float aspect = 1280.f / 720.f;
 	dx.SetScreen(aspect, 90.f, 1);
@@ -165,8 +165,8 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 45.f;
-	static float y =20.f;
+	static float x = 40.f;
+	static float y =40.f;
 	static float z = 0.f;
 
 	Mat_Init_4X4(&mrz, Cos(z), -Sin(z), 0, 0,
@@ -208,7 +208,7 @@ void Game::ComposeFrame()
 	dx.Rotate(mrz);
 	dx.Rotate(mry);
 	
-	dx.setWorldLocation(Vector4d(0.f, 0.f, 18.f));
+	dx.setWorldLocation(Vector4d(0.f, 0.f, 10.f));
 	dx.TemporAASapmle();
 	dx.BackRemove();
 	dx.RelativetoWorld();
