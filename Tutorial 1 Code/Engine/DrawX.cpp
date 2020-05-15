@@ -174,7 +174,7 @@ void DrawX::DrawTri( Graphics& gfx)
 			//gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z, uv1.u,uv1.v,uv2.u,uv2.v,uv3.u,uv3.v,gfx.img);
 
 
-			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z);
+			gfx.Draw_FillTri(v1.x, v1.y,v1.z,v2.x, v2.y,v2.z, v3.x, v3.y,v3.z,this->camera);
 		}
 		++b;
 	}

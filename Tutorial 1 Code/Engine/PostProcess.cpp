@@ -6,7 +6,7 @@
 PostProcess::PostProcess()
 {
 	depth = new float[1280 * 720];
-	
+	motionvector = new MotionVector[1280 * 720];
 }
 
 
@@ -30,6 +30,20 @@ void PostProcess::RestDepth()
 
 	depth = new float[1280 * 720];
 }
+
+void PostProcess::ResetMotinVec()
+{
+
+	if (motionvector != nullptr)
+	{
+		delete[] motionvector;
+		motionvector = nullptr;
+	}
+
+	motionvector = new MotionVector[1280 * 720];
+}
+
+
 
 PostProcess * PostProcess::GetApplcation()
 {

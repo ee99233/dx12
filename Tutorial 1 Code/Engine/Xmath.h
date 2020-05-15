@@ -1,6 +1,6 @@
 #pragma once
 #define PI 3.1415927
-
+class Color;
 namespace XMath 
 {
 
@@ -46,6 +46,68 @@ namespace XMath
 		}
 		Vector2d_Typ() {}
 	}Vector2d, *Vector2D_Ptr, Point2d,*Point2_Ptr;
+
+	typedef struct MXFlaot3
+	{
+		float x;
+		float y;
+		float z;
+
+		MXFlaot3& operator-=(const MXFlaot3& mf1 )
+		{
+		
+			this->x= this->x - mf1.x;
+			this->y = this->y - mf1.y;
+			this->z = this->z - mf1.z;
+			return *this;
+			
+		}
+
+		MXFlaot3& operator+=(const MXFlaot3& mf1)
+		{
+
+			this->x = this->x + mf1.x;
+			this->y = this->y + mf1.y;
+			this->z = this->z + mf1.z;
+			return *this;
+		}
+		
+		MXFlaot3 operator+(const MXFlaot3& mf1) const
+		{
+			MXFlaot3 m3;
+			m3.x = this->x + mf1.x;
+			m3.y = this->y + mf1.y;
+			m3.z = this->z + mf1.z;
+			return m3;
+
+		}
+
+		MXFlaot3 operator-(const MXFlaot3& mf1) const
+		{
+			MXFlaot3 m3;
+			m3.x = this->x - mf1.x;
+			m3.y = this->y - mf1.y;
+			m3.z = this->z - mf1.z;
+			return m3;
+
+		}
+		MXFlaot3& operator=(const MXFlaot3& mf1)
+		{
+			
+			 this->x = mf1.x;
+			 this->y = mf1.y;
+			 this->z = mf1.z;
+			return *this;
+
+		}
+		MXFlaot3() 
+		{
+			x = 0.0f;
+			y = 0.0f;
+			z = 0.0f;
+		}
+		
+	};
 
 	typedef struct MATRIX4X4_TYP 
 	{
@@ -140,5 +202,7 @@ namespace XMath
 	void inversepro(const MATRIX4X4& M1, MATRIX4X4& M2);
 	void inversemcar(const MATRIX4X4& M1, MATRIX4X4& M2);
 	void CopyMaTR(const MATRIX4X4& M1, MATRIX4X4& M2);
+	void RGBTOYCOCG(MXFlaot3 &color);
+	void YCOCGTORGB(MXFlaot3& color);
 }
 

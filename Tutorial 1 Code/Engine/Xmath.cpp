@@ -1,7 +1,7 @@
 
 #include <math.h>
 #include "Xmath.h"
-
+#include "Colors.h"
 
 void XMath::CrossProduct(Vector4D_Ptr result, Vector4D_Ptr v1, Vector4D_Ptr v2)
 {
@@ -254,4 +254,30 @@ void XMath::CopyMaTR(const MATRIX4X4& M1, MATRIX4X4& M2)
 	M2.M[3][0] = M1.M[3][0]; M2.M[3][1] = M1.M[3][1]; M2.M[3][2] = M1.M[3][2]; M2.M[3][3] = M1.M[3][3];
 
 }
+
+void XMath::RGBTOYCOCG(MXFlaot3 & color)
+{
+	float red = color.x * (1 / 4) + 1 / 2 * color.y + 1 / 4 * color.z;
+	float green = color.x * (1 / 2)  - 1 / 2 * color.z;
+	float blue = color.x *(-1 / 4) + 1 / 2 * color.y + (-1 / 4) * color.z;
+	color.x=red;
+	color.y=green;
+	color.z=blue;
+
+}
+
+void XMath::YCOCGTORGB(MXFlaot3 & color)
+{
+	float red = color.x  +  color.y - color.z;
+	float green = color.x +  color.z;
+	float blue = color.x  - color.y - color.z;
+
+	color.x=red;
+	color.y=green;
+	color.z= blue;
+
+}
+
+
+
 
