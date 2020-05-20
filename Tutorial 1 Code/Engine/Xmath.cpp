@@ -257,9 +257,9 @@ void XMath::CopyMaTR(const MATRIX4X4& M1, MATRIX4X4& M2)
 
 void XMath::RGBTOYCOCG(MXFlaot3 & color)
 {
-	float red = color.x * (1 / 4) + 1 / 2 * color.y + 1 / 4 * color.z;
-	float green = color.x * (1 / 2)  - 1 / 2 * color.z;
-	float blue = color.x *(-1 / 4) + 1 / 2 * color.y + (-1 / 4) * color.z;
+	float red = color.x * (1.0f / 4.0f) + (1.0f / 2.0f) * color.y + (1.0f/4.0f) * color.z;
+	float green = color.x * (1 / 2)  - (1/2) * color.z;
+	float blue = color.x *(-1.0f / 4.0f) + (1.0f / 2.0f) * color.y + (-1.0f/ 4.0f) * color.z;
 	color.x=red;
 	color.y=green;
 	color.z=blue;
