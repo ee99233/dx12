@@ -150,12 +150,10 @@ void Cmaera::TemporalAASample()
 	int ny = hutn % 8 + 1;
 	float SampleX = Halton(nw, 2);
 	float SampleY = Halton(ny,3);
-	float samplex = (JitterX * 2.0f - 1.0f);
-	float sampley = (JitterY * 2.0f - 1.0f);
 	ViewMATRIX.mper.M[2][0] = (SampleX*2.0f - 1.0f) / viewport_width;
 	ViewMATRIX.mper.M[2][1] = (SampleY*2.0f - 1.0f) / viewport_heght;
-	JitterX = (SampleX*2.0f - 1.0f) / viewport_width;
-	JitterY = (SampleY*2.0f - 1.0f) / viewport_heght;
+	JitterX = (SampleX*2.0f - 1.0f);
+	JitterY = (SampleY*2.0f - 1.0f);
 	inversepro(ViewMATRIX.mper, ViewMATRIX.inversemper);
 	++hutn;
 }
@@ -167,6 +165,8 @@ void Cmaera::CopytoPrevMat()
 	CopyMaTR(ViewMATRIX.mscr, PrevViewMATRIX.mscr);
 	CopyMaTR(ViewMATRIX.trans, PrevViewMATRIX.trans);
 	CopyMaTR(ViewMATRIX.uvn, PrevViewMATRIX.uvn);
+	PrevJitterX = JitterX;
+	PrevJitterY = JitterY;
 }
 
 float Cmaera::GetPrevjx() const

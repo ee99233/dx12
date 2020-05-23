@@ -58,6 +58,10 @@ public:
 	 MATRIX4X4 getmper() const;
 	 FMATRIX ViewMATRIX;
 	 FMATRIX PrevViewMATRIX;
+	 float JitterX;
+	 float JitterY;
+	 float PrevJitterX;
+	 float PrevJitterY;
 private:
 	Vector4d pos;
 	Vector4d u;
@@ -78,8 +82,7 @@ private:
 	float viewport_center_y;//视口中心y
 	float aspect_radio;
 	int hutn = 0;
-	float JitterX;
-	float JitterY;
+	
 
 	
 	
