@@ -67,14 +67,14 @@ void Game::initDrawX()
 		4, 3, 7
 	};
 	Vector4d v[8] = {
-	Vector4d(-4.0f, -4.0f, -4.0f),
-	Vector4d(-4.0f, +4.0f, -4.0f),
-	Vector4d(+4.0f, +4.0f, -4.0f),
-	Vector4d(+4.0f, -4.0f, -4.0f),
-	Vector4d(-4.0f, -4.0f, +4.0f),
-	Vector4d(-4.0f, +4.0f, +4.0f),
-	Vector4d(+4.0f, +4.0f, +4.0f),
-	Vector4d(+4.0f, -4.0f, +4.0f),
+	Vector4d(-3.0f, -3.0f, -3.0f),
+	Vector4d(-3.0f, +3.0f, -3.0f),
+	Vector4d(+3.0f, +3.0f, -3.0f),
+	Vector4d(+3.0f, -3.0f, -3.0f),
+	Vector4d(-3.0f, -3.0f, +3.0f),
+	Vector4d(-3.0f, +3.0f, +3.0f),
+	Vector4d(+3.0f, +3.0f, +3.0f),
+	Vector4d(+3.0f, -3.0f, +3.0f),
 	};
 
 	uint tindex[36] = {
@@ -165,9 +165,11 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 40.f;
-	static float y =40.f;
+	static float x = 45.f;
+	static float y =45.f;
 	static float z = 0.f;
+
+	static float xv = 0.0f;
 
 	Mat_Init_4X4(&mrz, Cos(z), -Sin(z), 0, 0,
 		Sin(z), Cos(z), 0, 0,
@@ -202,13 +204,21 @@ void Game::ComposeFrame()
 		wnd.kbd.FlushKey();
 	}
 
+	if (wnd.kbd.KeyIsPressed('P'))
+	{
+
+		xv += 1.f;
+		wnd.kbd.FlushKey();
+	}
 
 	dx.copytemp();
 	dx.Rotate(mrx);
 	dx.Rotate(mrz);
 	dx.Rotate(mry);
 	
-	dx.setWorldLocation(Vector4d(0.f, 0.f, 10.f));
+
+
+	dx.setWorldLocation(Vector4d(xv, 0.f, 10.f));
 	dx.TemporAASapmle();
 	dx.BackRemove();
 	dx.RelativetoWorld();
@@ -245,6 +255,7 @@ void Game::ComposeFrame()
 	
 	dx.camera.CopytoPrevMat();
 	PostProcess::GetApplcation()->RestDepth();
+	PostProcess::GetApplcation()->ResetMotinVec();
 
 
 }

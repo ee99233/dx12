@@ -4,7 +4,10 @@ using namespace std;
 struct MotionVector {
 	float MotingX;
 	float MotingY;
-	
+	MotionVector() {
+		MotingX = 0.0f;
+		MotingY = 0.0f;
+	}
 
 };
 class PostProcess
