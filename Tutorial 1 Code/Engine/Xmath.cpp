@@ -150,6 +150,11 @@ float XMath::CrossProductF(float x1, float x2, float y1, float y2)
 	return x1 * y2 - x2 * y1;
 }
 
+double XMath::CrossProductD(double x1, double x2, double y1, double y2)
+{
+	return x1 * y2 - x2 * y1;
+}
+
 bool XMath::insideangle(int vx1, int vy1, int vx2, int vy2, int vx3, int vy3, int vx0, int vy0)
 {
 	float s1 = CrossProductF(vx1, vy1, vx2, vy2);

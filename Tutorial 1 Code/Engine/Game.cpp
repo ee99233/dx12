@@ -67,14 +67,14 @@ void Game::initDrawX()
 		4, 3, 7
 	};
 	Vector4d v[8] = {
-	Vector4d(-3.0f, -3.0f, -3.0f),
-	Vector4d(-3.0f, +3.0f, -3.0f),
-	Vector4d(+3.0f, +3.0f, -3.0f),
-	Vector4d(+3.0f, -3.0f, -3.0f),
-	Vector4d(-3.0f, -3.0f, +3.0f),
-	Vector4d(-3.0f, +3.0f, +3.0f),
-	Vector4d(+3.0f, +3.0f, +3.0f),
-	Vector4d(+3.0f, -3.0f, +3.0f),
+	Vector4d(-4.0f, -4.0f, -4.0f),
+	Vector4d(-4.0f, +4.0f, -4.0f),
+	Vector4d(+4.0f, +4.0f, -4.0f),
+	Vector4d(+4.0f, -4.0f, -4.0f),
+	Vector4d(-4.0f, -4.0f, +4.0f),
+	Vector4d(-4.0f, +4.0f, +4.0f),
+	Vector4d(+4.0f, +4.0f, +4.0f),
+	Vector4d(+4.0f, -4.0f, +4.0f),
 	};
 
 	uint tindex[36] = {
@@ -165,8 +165,8 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 45.f;
-	static float y =45.f;
+	static float x = 0.f;
+	static float y =0.f;
 	static float z = 0.f;
 
 	static float xv = 0.0f;
@@ -246,7 +246,7 @@ void Game::ComposeFrame()
 	}
 	else
 	{
-		gfx.postprocessTemporaa(dx.getjx(), dx.getjy(),dx);
+		//gfx.postprocessTemporaa(dx.getjx(), dx.getjy(),dx);
 		gfx.CopyColor();
 	}
 	//gfx.Draw_FillTri(150.f, 100.f, 0.5f, 100.f, 100.f, 0.4f, 200.f, 200.f, 0.3f);

@@ -32,14 +32,14 @@ namespace XMath
 	{
 		union
 		{
-			float M[2];
+			double M[2];
 			struct
 			{
 				float u, v;
 			};
 
 		};
-		Vector2d_Typ(float u1, float v1)
+		Vector2d_Typ(double u1, double v1)
 		{
 			u = u1;
 			v = v1;
@@ -188,6 +188,8 @@ namespace XMath
 
 	float CrossProductF(int x1, int x2, int y1, int y2);
 	float CrossProductF(float x1, float x2, float y1, float y2);
+
+	double CrossProductD(double x1, double x2, double y1, double y2);
 
 	bool insideangle(int vx1, int vy1, int vx2, int vy2, int vx3, int vy3, int vx0, int vy0);
 
