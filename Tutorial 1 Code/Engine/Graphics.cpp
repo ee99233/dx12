@@ -23,6 +23,7 @@
 #include "DXErr.h"
 #include "ChiliException.h"
 #include <assert.h>
+#include<algorithm>
 #include <array>
 #include "Xmath.h"
 #include "Cmaera.h"
@@ -30,6 +31,7 @@
 #include "D3DX11tex.h"
 #include "PostProcess.h"
 #include "DrawX.h"
+
 
 using namespace std;
 using namespace XMath;
@@ -1420,6 +1422,7 @@ void Graphics::Draw_FillTri(int x1, int y1, float z1, int x2, int y2, float z2, 
 bool  Graphics::Draw_UV(float x1, float y1, float x2, float y2, float x3, float y3, float x, float y, double& u, double& v)
 {
 
+	
 
 	Vector2d v1( x2-x1, y2 - y1);
 	Vector2d v2(x3 - x1, y3-y1);
@@ -1612,111 +1615,145 @@ void Graphics::postprocessTemporaa(float jx, float jy, DrawX& dx)
 		for (int x = 0; x < ScreenWidth; ++x)
 		{
 			float depth = PostProcess::GetApplcation()->GetDepth(x, y);
-			unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
-			unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
-			unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
-			pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
-			if (depth > 0 && depth < 1)
-			{
-				
-				unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+			/*	unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
 				unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
-				unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
+				unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;*/
+			MotionVector motionv = PostProcess::GetApplcation()->Getmotionvector(x, y);
+			int motionx = motionv.MotingX + x + 0.5;
+			int motiony = motionv.MotingY + y + 0.5;
+		/*	unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetG()*0.95f;
+			unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetR()*0.95f;
+			unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetB()*0.95f;*/
+			//pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
+
+				/*unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetG()*0.95f;
+				unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetR()*0.95f;
+				unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx].GetB()*0.95f;
 				pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
-				MotionVector motionv = PostProcess::GetApplcation()->Getmotionvector(x, y);
-				int motionx = motionv.MotingX + x + 0.5;
-				int motiony = motionv.MotingY + y + 0.5;
-				if (motionv.MotingX != 0.0f || motionv.MotingY != 0.0f)
+
+				if (motionx >= 1279 || motionx < 0)
 				{
-					//if (motionx >= 1279 || motionx < 0)
-					//{
-					//	int q = 0;
-					//}
-
-					//if (motiony >= 719 || motiony < 0)
-					//{
-					//	int q = 0;
-					//}
-
-					//Color historyColor = prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx];
-					//Color currcolor = pSysBuffer[Graphics::ScreenWidth * y + x];
-					//MXFlaot3 history;
-					//history.x = (float)historyColor.GetR() / 255.0f;
-					//history.y = (float)historyColor.GetG() / 255.0f;
-					//history.z = (float)historyColor.GetB() / 255.0f;
-
-					//MXFlaot3 curr;
-
-					//curr.x = (float)currcolor.GetR() / 255.0f;
-					//curr.y = (float)currcolor.GetG() / 255.0f;
-					//curr.z = (float)currcolor.GetB() / 255.0f;
-
-					//MXFlaot3 m1;
-					//MXFlaot3 m2;
-					//MXFlaot3 sigma;
-					//MXFlaot3 u;
-
-					//MXFlaot3 min;
-					//MXFlaot3 max;
-					//for (int i = 0; i < 9; i++)
-					//{
-					//	int x1 = x + SampleOffsets[i][0];
-					//	int y1 = y + SampleOffsets[i][1];
-					//	Color color = pSysBuffer[Graphics::ScreenWidth * y1 + x1];
-					//	m1.x += color.GetR() / 255.f;
-					//	m1.y += color.GetG() / 255.f;
-					//	m1.z += color.GetB() / 255.f;
-					//	m2.x += (color.GetR() / 255.f)* (color.GetR() / 255.f);
-					//	m2.y += (color.GetG() / 255.f)*(color.GetG() / 255.f);
-					//	m2.z += (color.GetB() / 255.f)*(color.GetB() / 255.f);
-
-					//}
-
-					//u.x = m1.x / 9.0f;
-					//u.y = m1.y / 9.0f;
-					//u.z = m1.z / 9.0f;
-					//sigma.x = sqrt(m2.x / 9.0f - u.x*u.x);
-					//sigma.y = sqrt(m2.y / 9.0f - u.y*u.y);
-					//sigma.z = sqrt(m2.z / 9.0f - u.z*u.z);
-					//min.x = u.x - sigma.x;
-					//min.y = u.y - sigma.y;
-					//min.z = u.z - sigma.z;
-					//max.x = u.x + sigma.x;
-					//max.y = u.y + sigma.y;
-					//max.z = u.z + sigma.z;
-
-					///*	RGBTOYCOCG(min);
-					//	RGBTOYCOCG(max);
-					//	RGBTOYCOCG(u);*/
-
-					//MXFlaot3 his = TemporalClip(min, max, u, history);
-
-					///*YCOCGTORGB(his);*/
-					////YCOCGTORGB(history);
-					//unsigned char prevred = his.x*255.f;
-					//unsigned char prevgreen = his.y*255.f;
-					//unsigned char prevblue = his.z*255.f;
-
-					//unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + 0.95f*prevgreen;
-					//unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + 0.95 *prevred;
-					//unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + 0.95f*prevblue;
-					//pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
+					int q = 0;
 				}
-				else
+
+				if (motiony >= 719 || motiony < 0)
 				{
-					/*unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
-					unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
-					unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
-					pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);*/
+					int q = 0;
+				}*/
+
+			Color historyColor = prevpSysBuffer[Graphics::ScreenWidth * motiony + motionx];
+			Color currcolor = pSysBuffer[Graphics::ScreenWidth * y + x];
+			MXFlaot3 history;
+			history.x = (float)historyColor.GetR() / 255.0f;
+			history.y = (float)historyColor.GetG() / 255.0f;
+			history.z = (float)historyColor.GetB() / 255.0f;
+
+			MXFlaot3 curr;
+
+			curr.x = (float)currcolor.GetR() / 255.0f;
+			curr.y = (float)currcolor.GetG() / 255.0f;
+			curr.z = (float)currcolor.GetB() / 255.0f;
+
+			MXFlaot3 m1;
+			MXFlaot3 m2;
+			MXFlaot3 sigma;
+			MXFlaot3 u;
+
+			MXFlaot3 min;
+			MXFlaot3 max;
+			for (int i = 0; i < 9; i++)
+			{
+				int x1 = x + SampleOffsets[i][0];
+				int y1 = y + SampleOffsets[i][1];
+				if (x1 >= 1279 || x1 < 0)
+				{
+					break;
 				}
+
+				if (x1 > 719 || y1 < 0)
+				{
+					break;
+				}
+				Color color = pSysBuffer[Graphics::ScreenWidth * y1 + x1];
+
+				m1.x += color.GetR() / 255.f;
+				m1.y += color.GetG() / 255.f;
+				m1.z += color.GetB() / 255.f;
+				m2.x += (color.GetR() / 255.f)* (color.GetR() / 255.f);
+				m2.y += (color.GetG() / 255.f)*(color.GetG() / 255.f);
+				m2.z += (color.GetB() / 255.f)*(color.GetB() / 255.f);
+
 			}
+
+			u.x = m1.x / 9.0f;
+			u.y = m1.y / 9.0f;
+			u.z = m1.z / 9.0f;
+			sigma.x = sqrt(m2.x / 9.0f - u.x*u.x);
+			sigma.y = sqrt(m2.y / 9.0f - u.y*u.y);
+			sigma.z = sqrt(m2.z / 9.0f - u.z*u.z);
+			min.x = u.x - sigma.x;
+			min.y = u.y - sigma.y;
+			min.z = u.z - sigma.z;
+			max.x = u.x + sigma.x;
+			max.y = u.y + sigma.y;
+			max.z = u.z + sigma.z;
+
+			/*RGBTOYCOCG(min);
+			RGBTOYCOCG(max);
+			RGBTOYCOCG(u);*/
+
+			MXFlaot3 his = TemporalClip(min, max, u, history);
+
+			/*YCOCGTORGB(his);*/
+			//YCOCGTORGB(history
+			unsigned char prevred = his.x*255.f;
+			unsigned char prevgreen = his.y*255.f;
+			unsigned char prevblue = his.z*255.f;
 			
 
+			/*if (prevred > 255)
+			{
+				prevred = 255;
+			}
+			if (prevgreen > 255)
+			{
+				prevgreen = 255;
+			}
+			if (prevblue > 255)
+			{
+				prevblue = 255;
+			}
+			if (prevred < 0)
+			{
+				prevred = 0;
+			}
+			if (prevgreen < 0)
+			{
+				prevgreen = 0;
+			}
+			if (prevblue < 0)
+			{
+				prevblue = 0;
+			}*/
+
+
+			unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + 0.95f*prevgreen;
+			unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + 0.95 *prevred;
+			unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + 0.95f*prevblue;
+
+			pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);
+
+			/*unsigned int green = pSysBuffer[Graphics::ScreenWidth * y + x].GetG() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetG()*0.95f;
+			unsigned int red = pSysBuffer[Graphics::ScreenWidth * y + x].GetR() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetR()*0.95f;
+			unsigned int blue = pSysBuffer[Graphics::ScreenWidth * y + x].GetB() * 0.05f + prevpSysBuffer[Graphics::ScreenWidth * y + x].GetB()*0.95f;
+			pSysBuffer[Graphics::ScreenWidth * y + x] = Color(red, green, blue);*/
 		}
+
 	}
 
-
 }
+
+
 
 
 
@@ -1735,25 +1772,25 @@ MXFlaot3 Graphics::TemporalClip(const MXFlaot3 & min, const MXFlaot3 & max, cons
 	MXFlaot3 v_clip = out - avg;
 
 	MXFlaot3 v_uint;
-	if (e_clip.x == 0)
+	if (e_clip.x == 0.0f)
 	{
-		v_uint.x = 0;
+		v_uint.x = 0.00001;
 	}
 	else
 	{
 		v_uint.x = v_clip.x / e_clip.x;
 	}
-	if (e_clip.y == 0)
+	if (e_clip.y == 0.0f)
 	{
-		v_uint.y = 0;
+		v_uint.y = 0.00001;
 	}
 	else
 	{
 		v_uint.y = v_clip.y / e_clip.y;
 	}
-	if (e_clip.y == 0)
+	if (e_clip.y == 0.0f)
 	{
-		v_uint.z = 0;
+		v_uint.z = 0.00001;
 	}
 	else
 	{

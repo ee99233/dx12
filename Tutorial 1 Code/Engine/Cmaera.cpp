@@ -148,8 +148,8 @@ void Cmaera::TemporalAASample()
 {
 	int nw = hutn % 8+1;
 	int ny = hutn % 8 + 1;
-	float SampleX = Halton(7, 2);
-	float SampleY = Halton(7,3);
+	float SampleX = Halton(nw, 2);
+	float SampleY = Halton(ny,3);
 	ViewMATRIX.mper.M[2][0] = (SampleX*2.0f - 1.0f) / viewport_width;
 	ViewMATRIX.mper.M[2][1] = (SampleY*2.0f - 1.0f) / viewport_heght;
 	JitterX = (SampleX*2.0f - 1.0f);

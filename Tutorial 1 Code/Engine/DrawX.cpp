@@ -159,7 +159,7 @@ void DrawX::settexcord(Point2_Ptr ver, int size)
 void DrawX::DrawTri( Graphics& gfx)
 {
 	int b = 0;
-	for (int i = 0; i < 6; i += 3)
+	for (int i = 0; i < 36; i += 3)
 	{
 
 		if (isbackremove[b])
