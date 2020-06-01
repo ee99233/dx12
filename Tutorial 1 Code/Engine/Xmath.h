@@ -82,6 +82,16 @@ namespace XMath
 
 		}
 
+		MXFlaot3 operator*(const float mf1) const
+		{
+			MXFlaot3 m3;
+			m3.x = this->x * mf1;
+			m3.y = this->y * mf1;
+			m3.z = this->z * mf1;
+			return m3;
+
+		}
+
 		MXFlaot3 operator-(const MXFlaot3& mf1) const
 		{
 			MXFlaot3 m3;
@@ -100,14 +110,18 @@ namespace XMath
 			return *this;
 
 		}
-		MXFlaot3() 
+		MXFlaot3()
 		{
 			x = 0.0f;
 			y = 0.0f;
 			z = 0.0f;
 		}
-		
+
+
 	};
+		
+		
+	
 
 	typedef struct MATRIX4X4_TYP 
 	{

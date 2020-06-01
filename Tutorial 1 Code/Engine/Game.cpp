@@ -167,8 +167,8 @@ void Game::ComposeFrame()
 	static int process = 0;
 	MATRIX4X4 mrz, mrx, mry;
 
-	static float x = 45.f;
-	static float y =45.f;
+	static float x = 0.f;
+	static float y =0.f;
 	static float z = 0.f;
 
 	static float xv = 0.0f;
@@ -209,7 +209,7 @@ void Game::ComposeFrame()
 	if (wnd.kbd.KeyIsPressed('P'))
 	{
 
-		xv += 1.f;
+		xv -= 1.f;
 		wnd.kbd.FlushKey();
 	}
 
